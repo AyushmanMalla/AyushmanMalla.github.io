@@ -9,4 +9,7 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   site: 'https://ayushmanmalla.github.io',
   integrations: [mdx(), sitemap(), tailwind()],
+  output: "static",
+  outDir: "./docs",
+  build: {assets: "astro",},
 });
