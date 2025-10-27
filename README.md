@@ -1,34 +1,27 @@
-# Astro Starter Kit: Blog
-
-```sh
-npm create astro@latest -- --template blog
-```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+# Personal Portfolio/Blog Page Repo
 
 ## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
+Repo follows the following struct - had to make changes to the default Astro tempalte for github pages deployment project, you'll see the following folders and files:
 
 ```text
+├── .nojekyll
+├── .gitignore
+├── docs/
 ├── public/
 ├── src/
+    ├── assetes/
 │   ├── components/
-│   ├── content/
+│   ├── content/blog/
 │   ├── layouts/
 │   └── pages/
+    ├── styles/
+    consts.ts
+    content.config.ts
 ├── astro.config.mjs
 ├── README.md
 ├── package.json
+├── tailwind.config.cjs
 └── tsconfig.json
 ```
 
