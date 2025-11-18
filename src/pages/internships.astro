@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/FullWidthLayout.astro';
+import InternshipCard from '../components/InternshipCard.astro';
+import TranscelestialImage from '../assets/Transcelestial.jpeg';
+import AMDImage from '../assets/Contours Red.png';
+import UnileverImage from '../assets/Unilever.jpeg';
+
+const internships = [
+  {
+    company: 'AMD',
+    title: 'Hardware Engineering Intern',
+    date: 'Jan 13 2025',
+    graphic: AMDImage, // Placeholder
+    description: 'Placeholder description for the AMD internship. Talk about your role, responsibilities, and key achievements. What technologies did you work with? What was the impact of your work?',
+  },
+  {
+    company: 'Transcelestial',
+    title: 'FPGA/Hardware Engineering Intern',
+    date: 'Jul 14 2025',
+    graphic: TranscelestialImage, // Placeholder
+    description: 'My main focus was improving and deploying a high-performance packet forwarder capable of handling 10G Ethernet traffic on Xilinx Zynq ultraScale+ MPSoC. Primarily worked on networking tests(Layer 2/3 latency/throughput/configs) and custom bootloaders for Space and Terrestrial Deployments. Additionally, setup in house FPGA Dev infra from scratch and worked on Forward-Error-Correction(FEC) for the 10G Ethernet Design. Collaborated closely with cross-functional teams to ensure seamless integration of hardware components with embedded software, enhancing overall system performance and scalability.\n\n On a side note, became super proficient in using fancy coffee machines(the office had 4 of them!)',
+  },
+  {
+    company: 'Unilever',
+    title: 'Technology and Finance Intern',
+    date: 'May 1 2024',
+    graphic: UnileverImage, // Placeholder
+    description: 'Placeholder description for the Unilever internship. Explain the data science projects you worked on, the models you built, and the business impact of your analyses. Highlight the tools and libraries you used.',
+  },
+].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
+---
+
+<Layout
+	title="Internships"
+	description="A timeline of my professional internship experiences."
+>
+	<div class="py-8">
+		<h1 class="text-4xl font-bold tracking-tight text-slate-100 sm:text-5xl text-center mb-12">
+			Professional Experience
+		</h1>
+		<div>
+			{internships.map((internship, index) => (
+				<InternshipCard internship={internship} direction={index % 2 === 0 ? 'left' : 'right'} />
+			))}
+		</div>
+	</div>
+</Layout>
