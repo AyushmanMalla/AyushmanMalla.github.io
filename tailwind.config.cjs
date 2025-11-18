@@ -5,9 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'dark-bg': '#121212',
+        'background': '#000000',
+        'primary': '#FE2600',
+        'accent': '#FF5B3E',
+        'secondary': '#FF917D',
         'dark-card': '#1E1E1E',
-        'accent-green': '#00F5A0',
       },
       fontFamily: {
         sans: ['Atkinson', 'sans-serif'],

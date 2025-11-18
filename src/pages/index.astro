@@ -18,7 +18,7 @@ const posts = (await getCollection('blog'))
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body class="bg-dark-bg text-slate-200">
+	<body class="bg-background text-slate-200">
 		<Header />
 		<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 			<!-- Hero Section -->
@@ -26,14 +26,14 @@ const posts = (await getCollection('blog'))
 
 			<!-- Blog Showcase -->
 			<section class="py-8">
-				<h2 class="text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl text-center mb-12 text-red-500">
+				<h2 class="text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl text-center mb-12 text-accent">
 					Recent Blog Posts
 				</h2>
 				<ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 					{
 						posts.map((post) => (
 							<li class="transform transition-transform duration-300 hover:scale-105">
-								<a href={`/blog/${post.slug}/`} class="block rounded-lg overflow-hidden bg-dark-card border-2 border-transparent hover:border-accent-green transition-colors duration-300">
+								<a href={`/blog/${post.slug}/`} class="block rounded-lg overflow-hidden bg-dark-card border-2 border-transparent hover:border-accent transition-colors duration-300">
 									{post.data.heroImage && (
 										<Image
 											width={720}
@@ -64,13 +64,13 @@ const posts = (await getCollection('blog'))
 					Get in Touch
 				</h2>
 				<div class="flex justify-center space-x-6">
-					<a href="https://github.com/AyushmanMalla" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent-green">
+					<a href="https://github.com/AyushmanMalla" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent">
 						GitHub
 					</a>
-					<a href="https://www.linkedin.com/in/ayushman-malla-952900229/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent-green">
+					<a href="https://www.linkedin.com/in/ayushman-malla-952900229/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent">
 						LinkedIn
 					</a>
-					<a href="mailto:ayushman.malla@e.ntu.edu.sg" class="text-slate-400 hover:text-accent-green">
+					<a href="mailto:ayushman.malla@e.ntu.edu.sg" class="text-slate-400 hover:text-accent">
 						Email
 					</a>
 				</div>

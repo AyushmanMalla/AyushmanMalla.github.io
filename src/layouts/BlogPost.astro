@@ -16,12 +16,26 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<BaseHead title={title} description={description} />
 	</head>
 
-	<body class="bg-dark-bg text-slate-200">
+	<body class="bg-background text-slate-200">
 		<Header />
 		<main class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
 			<article>
 				<div class="py-8">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>}
+					<!-- {heroImage && <Image width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>} -->
+
+					{heroImage && (
+                        <>
+                            {typeof heroImage === 'string' ? (
+                                heroImage.endsWith('.mp4') ? (
+                                    <video width={1020} height={510} src={heroImage} autoplay loop muted class="w-full h-auto rounded-lg shadow-md mb-8"></video>
+                                ) : (
+                                    <img width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>
+                                )
+                            ) : (
+                                <Image width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>
+                            )}
+                        </>
+                    )}
 				</div>
 				<div class="prose prose-lg prose-invert max-w-none">
 					<div class="text-center mb-8">

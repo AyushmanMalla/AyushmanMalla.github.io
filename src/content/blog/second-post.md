@@ -1,16 +1,159 @@
 ---
-title: 'Second post'
-description: 'Lorem ipsum dolor sit amet'
-pubDate: 'Jul 15 2022'
-heroImage: '../../assets/blog-placeholder-4.jpg'
+title: 'Cache Locality v/s Asymptotic Analysis'
+description: 'Cache Locality v/s Asymptotic Analysis'
+pubDate: 'Nov 18 2025'
+heroImage: '../../assets/wave.gif'
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
+As programmers, we're often taught to analyze algorithms using Big O notation. An algorithm that is O(n) is better than one that is O(n²), and we strive to find the most efficient algorithm in terms of its asymptotic complexity. But what happens when two algorithms have the same complexity? Are they always equally fast?
 
-Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc. Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra massa massa ultricies mi.
+The answer, perhaps surprisingly, is no. In this post, we'll explore a fascinating example that demonstrates how the underlying hardware, specifically the CPU cache, can have a dramatic impact on performance. We'll look at two O(n²) algorithms for traversing a 2D matrix and see why one is significantly faster than the other, thanks to a concept called **cache locality**.
 
-Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
+### Asymptotic Analysis: A Quick Refresher
 
-Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id cursus metus aliquam eleifend mi.
+Asymptotic analysis, or Big O notation, is a way to describe the performance of an algorithm as the input size grows. It gives us a high-level understanding of how an algorithm scales. For example, an O(n²) algorithm's runtime will grow quadratically with the input size `n`.
 
-Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
+While incredibly useful, Big O notation deliberately ignores constants and lower-order terms. It doesn't care about the exact number of operations, but rather the growth rate. This means that two O(n²) algorithms might have very different constant factors, leading to different real-world performance.
+
+### The Memory Hierarchy and Cache Locality
+
+Modern computers have a memory hierarchy. At the top, we have CPU registers, which are extremely fast but very small. Then we have multiple levels of cache (L1, L2, L3), which are progressively larger but slower. Finally, we have the main memory (RAM), which is much larger but also much slower than the cache.
+
+![Memory Hierarchy](https://i.imgur.com/s3yZz6X.png)
+
+When the CPU needs to access data, it first checks the L1 cache. If the data is there (a **cache hit**), it's accessed very quickly. If not (a **cache miss**), the CPU checks the L2 cache, then L3, and finally RAM. Each level of miss incurs a significant performance penalty.
+
+To minimize cache misses, modern CPUs are designed to exploit two principles of locality:
+
+*   **Temporal Locality:** If a piece of data is accessed, it's likely to be accessed again soon.
+*   **Spatial Locality:** If a piece of data is accessed, it's likely that data near it in memory will be accessed soon.
+
+When a cache miss occurs, the CPU doesn't just fetch the single piece of data it needs from RAM. It fetches a whole block of contiguous data (called a cache line) and stores it in the cache, anticipating that nearby data will be needed soon. This is where our 2D matrix example comes in.
+
+### The 2D Matrix Traversal Problem
+
+Let's consider a simple task: summing all the elements in a large 2D matrix. We can do this in two ways:
+
+1.  **Row-major traversal:** Iterate through each row, and for each row, iterate through its columns.
+2.  **Column-major traversal:** Iterate through each column, and for each column, iterate through its rows.
+
+Here's how you might write this in Python using NumPy:
+
+```python
+import numpy as np
+
+# Create a large 10000x10000 matrix
+matrix = np.ones((10000, 10000))
+
+def sum_row_major(matrix):
+    total = 0
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            total += matrix[i, j]
+    return total
+
+def sum_column_major(matrix):
+    total = 0
+    for j in range(matrix.shape[1]):
+        for i in range(matrix.shape[0]):
+            total += matrix[i, j]
+    return total
+```
+
+Both of these functions have two nested loops, each running `n` times (where `n` is the dimension of the matrix). Therefore, both have a time complexity of O(n²). Asymptotically, they are identical. But in practice, their performance is anything but.
+
+### The Performance Difference: It's All About the Cache
+
+In languages like C, C++, and Python (with NumPy), 2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously, followed by the elements of the second row, and so on.
+
+![Row-Major Order](https://i.imgur.com/2X2bB8c.png)
+
+**Row-major traversal** accesses the elements in the exact order they are laid out in memory: `matrix[0,0]`, `matrix[0,1]`, `matrix[0,2]`, ... This is a perfect example of spatial locality. When the CPU fetches the first element, it also loads the next few elements into the cache line. Subsequent accesses are then lightning-fast cache hits.
+
+**Column-major traversal**, on the other hand, jumps around in memory. It accesses `matrix[0,0]`, then `matrix[1,0]`, then `matrix[2,0]`, etc. These elements are far apart in memory (separated by the length of a full row). Each access is likely to result in a cache miss, forcing the CPU to go all the way to RAM, which is orders of magnitude slower.
+
+### Let's Benchmark It
+
+We can use Python's `timeit` module to see the difference.
+
+```python
+import numpy as np
+import timeit
+
+# Create a large 10000x10000 matrix
+matrix = np.ones((10000, 10000))
+
+def sum_row_major(matrix):
+    total = 0
+    for i in range(matrix.shape[0]):
+        for j in range(matrix.shape[1]):
+            total += matrix[i, j]
+    return total
+
+def sum_column_major(matrix):
+    total = 0
+    for j in range(matrix.shape[1]):
+        for i in range(matrix.shape[0]):
+            total += matrix[i, j]
+    return total
+
+# Benchmark
+row_time = timeit.timeit(lambda: sum_row_major(matrix), number=1)
+col_time = timeit.timeit(lambda: sum_column_major(matrix), number=1)
+
+print(f"Row-major traversal time: {row_time:.4f} seconds")
+print(f"Column-major traversal time: {col_time:.4f} seconds")
+print(f"Difference: Column-major is {col_time / row_time:.2f}x slower")
+```
+
+When you run this, you'll see a significant difference. The row-major traversal will be much faster. The exact numbers will depend on your machine, but it's not uncommon to see the column-major traversal being 5-10x slower or even more!
+
+### A C++ Demonstration
+
+The effect is even more pronounced in a language like C++ where we have more direct control over memory.
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <chrono>
+
+const int SIZE = 10000;
+
+int main() {
+    std::vector<std::vector<int>> matrix(SIZE, std::vector<int>(SIZE, 1));
+
+    // Row-major traversal
+    auto start = std::chrono::high_resolution_clock::now();
+    long long sum1 = 0;
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            sum1 += matrix[i][j];
+        }
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> row_duration = end - start;
+    std::cout << "Row-major traversal time: " << row_duration.count() << " seconds" << std::endl;
+
+    // Column-major traversal
+    start = std::chrono::high_resolution_clock::now();
+    long long sum2 = 0;
+    for (int j = 0; j < SIZE; ++j) {
+        for (int i = 0; i < SIZE; ++i) {
+            sum2 += matrix[i][j];
+        }
+    }
+    end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> col_duration = end - start;
+    std::cout << "Column-major traversal time: " << col_duration.count() << " seconds" << std::endl;
+
+    std::cout << "Difference: Column-major is " << col_duration.count() / row_duration.count() << "x slower" << std::endl;
+
+    return 0;
+}
+```
+
+### Conclusion
+
+Asymptotic analysis is a fundamental tool for algorithm design, but it's not the whole story. Understanding how your code interacts with the underlying hardware can lead to significant performance improvements. The 2D matrix traversal example is a classic demonstration of how a simple change that respects cache locality can make an O(n²) algorithm dramatically faster than another O(n²) algorithm.
+
+So next time you're optimizing a piece of code, don't just think about the Big O. Think about the memory access patterns too. You might be surprised at the performance gains you can achieve.

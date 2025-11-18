@@ -17,7 +17,7 @@ const posts = (await getCollection('blog')).sort(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
-	<body class="bg-dark-bg text-slate-200">
+	<body class="bg-background text-slate-200">
 		<Header />
 		<main class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 			<section class="py-8">
@@ -30,7 +30,7 @@ const posts = (await getCollection('blog')).sort(
 									{ 'sm:col-span-2 lg:col-span-3': index === 0 },
 								]}
 							>
-								<a href={`/blog/${post.slug}/`} class="block rounded-lg overflow-hidden bg-dark-card border-2 border-transparent hover:border-accent-green transition-colors duration-300">
+								<a href={`/blog/${post.slug}/`} class="block rounded-lg overflow-hidden bg-dark-card border-2 border-transparent hover:border-accent transition-colors duration-300">
 									{post.data.heroImage && (
 										<Image
 											width={720}
