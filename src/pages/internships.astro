@@ -2,7 +2,7 @@
 import Layout from '../layouts/FullWidthLayout.astro';
 import InternshipCard from '../components/InternshipCard.astro';
 import TranscelestialImage from '../assets/Transcelestial.jpeg';
-import AMDImage from '../assets/Contours Red.png';
+import AMDImage from '../assets/AMD.png';
 import UnileverImage from '../assets/Unilever.jpeg';
 
 const internships = [
@@ -11,8 +11,7 @@ const internships = [
     title: 'Hardware Engineering Intern',
     date: 'Jan 13 2025',
     graphic: AMDImage, // Placeholder
-    description: 'Placeholder description for the AMD internship. Talk about your role, responsibilities, and key achievements. What technologies did you work with? What was the impact of your work?',
-  },
+    description: 'I spent a few months in the Enterprise CPU division, specifically focusing on the memory subsystems of AMD Epyc Processors(the most powerful CPU on the planet!) The core of my work involved debugging Intellectual Property (IP) Failures in the MBIST(Memory Built-in-Self-Test) suite. I built and integrated a tool that enabled better debugging of high-priority units from other HyperScalers that were returned. This automation alloewd us to traverse a massive search space of about 28 Million points to isolate the failure conditions inside the Caches of these CPUs. Additionally, I got certified by Advantest on ATE Software - SMT7 and recieved crash courses on System-Level-Testing as well. Lastly, AMD\'s employee benefits are super addictive HAHAHA - got a lot of fine-dining experiences as part of team bonding :)' },
   {
     company: 'Transcelestial',
     title: 'FPGA/Hardware Engineering Intern',
@@ -25,7 +24,7 @@ const internships = [
     title: 'Technology and Finance Intern',
     date: 'May 1 2024',
     graphic: UnileverImage, // Placeholder
-    description: 'Placeholder description for the Unilever internship. Explain the data science projects you worked on, the models you built, and the business impact of your analyses. Highlight the tools and libraries you used.',
+    description: 'My main focus was improving and deploying a high-performance packet forwarder capable of handling 10G Ethernet traffic on Xilinx Zynq ultraScale+ MPSoC. Primarily worked on networking tests(Layer 2/3 latency/throughput/configs) and custom bootloaders for Space and Terrestrial Deployments. Additionally, setup in house FPGA Dev infra from scratch and worked on Forward-Error-Correction(FEC) for the 10G Ethernet Design. Collaborated closely with cross-functional teams to ensure seamless integration of hardware components with embedded software, enhancing overall system performance and scalability.\n\n On a side note, became super proficient in using fancy coffee machines(the office had 4 of them!)',
   },
 ].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
 ---

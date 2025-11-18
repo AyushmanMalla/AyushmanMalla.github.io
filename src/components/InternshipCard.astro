@@ -43,7 +43,7 @@ const isGraphicLeft = direction === 'left';
   </div>
 
   <!-- Content Column -->
-  <div class:list={["py-12 px-4 sm:px-6 lg:px-8", { 'md:order-first': !isGraphicLeft }]}>
+  <div class:list={["py-12 px-4 sm:px-6 lg:px-20", { 'md:order-first': !isGraphicLeft }]}>
     <div class:list={["max-w-lg mx-auto", { 'md:ml-auto md:mr-0': isGraphicLeft, 'md:mr-auto md:ml-0': !isGraphicLeft }]}>
       <p class="text-sm text-slate-400 mb-2">{date}</p>
       <h3 class="text-3xl font-bold text-slate-100 mb-3">{company}</h3>
