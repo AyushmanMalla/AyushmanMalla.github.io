@@ -9,22 +9,22 @@ const internships = [
   {
     company: 'AMD',
     title: 'Hardware Engineering Intern',
-    date: 'Jan 13 2025',
+    date: 'Jan 2025',
     graphic: AMDImage, // Placeholder
     description: 'I spent a few months in the Enterprise CPU division, specifically focusing on the memory subsystems of AMD Epyc Processors(the most powerful CPU on the planet!) The core of my work involved debugging Intellectual Property (IP) Failures in the MBIST(Memory Built-in-Self-Test) suite. I built and integrated a tool that enabled better debugging of high-priority units from other HyperScalers that were returned. This automation alloewd us to traverse a massive search space of about 28 Million points to isolate the failure conditions inside the Caches of these CPUs. Additionally, I got certified by Advantest on ATE Software - SMT7 and recieved crash courses on System-Level-Testing as well. Lastly, AMD\'s employee benefits are super addictive HAHAHA - got a lot of fine-dining experiences as part of team bonding :)' },
   {
     company: 'Transcelestial',
     title: 'FPGA/Hardware Engineering Intern',
-    date: 'Jul 14 2025',
+    date: 'Jul 2025',
     graphic: TranscelestialImage, // Placeholder
     description: 'My main focus was improving and deploying a high-performance packet forwarder capable of handling 10G Ethernet traffic on Xilinx Zynq ultraScale+ MPSoC. Primarily worked on networking tests(Layer 2/3 latency/throughput/configs) and custom bootloaders for Space and Terrestrial Deployments. Additionally, setup in house FPGA Dev infra from scratch and worked on Forward-Error-Correction(FEC) for the 10G Ethernet Design. Collaborated closely with cross-functional teams to ensure seamless integration of hardware components with embedded software, enhancing overall system performance and scalability.\n\n On a side note, became super proficient in using fancy coffee machines(the office had 4 of them!)',
   },
   {
     company: 'Unilever',
     title: 'Technology and Finance Intern',
-    date: 'May 1 2024',
+    date: 'May 2024',
     graphic: UnileverImage, // Placeholder
-    description: 'My main focus was improving and deploying a high-performance packet forwarder capable of handling 10G Ethernet traffic on Xilinx Zynq ultraScale+ MPSoC. Primarily worked on networking tests(Layer 2/3 latency/throughput/configs) and custom bootloaders for Space and Terrestrial Deployments. Additionally, setup in house FPGA Dev infra from scratch and worked on Forward-Error-Correction(FEC) for the 10G Ethernet Design. Collaborated closely with cross-functional teams to ensure seamless integration of hardware components with embedded software, enhancing overall system performance and scalability.\n\n On a side note, became super proficient in using fancy coffee machines(the office had 4 of them!)',
+    description: 'I worked at the intersection of Tech, Finance, and Supply Chain, working to digitize how the company handles business waste. My goal was to build a robust validation system that could stand up to rigorous accounting principles - the idea was to build a tool that can bridge the gap between real inventory risk(supply chain) and probably inventory risk(accounting). Built an end-to-end data injestion tool that reconciles reports from cross functional teams and suggests immediate actions for Supply Chain Planners to manage inventory risk. The system is expected to provide clarity needed to unlock approximately $1 million USD in annual savings for each business group within Unilever.',
   },
 ].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
 ---
