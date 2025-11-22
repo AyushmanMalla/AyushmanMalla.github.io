@@ -5,7 +5,13 @@ pubDate: 'Nov 18 2025'
 heroImage: '../../assets/wave.gif'
 ---
 
-As programmers, we're often taught to analyze algorithms using Big O notation. An algorithm that is O(n) is better than one that is O(n²), and we strive to find the most efficient algorithm in terms of its asymptotic complexity. But what happens when two algorithms have the same complexity? Are they always equally fast?
+The inspiration for this blog stems from a discussion I had with a James - a Tech Fellow from Goldman Sachs(not outing his full name here) who primarily works on HPC and file systems. The context of this conversation was what he looks for in candidates applying to be a part of his team and what usually stands out. 
+
+His advice - **BREAK THINGS**
+
+*"Break things every chance you get. You are not learning anything until you push these systems to their absolute limit. There is a certain amount of knowledge synthesis that happens at this stage, when you know WHY a system breaks or WHY it doesn't"*
+
+At uni, we're often taught to analyze algorithms using the Big O notation. An algorithm that is O(n) is better than one that is O(n²), and we strive to find the most efficient algorithm in terms of its asymptotic complexity. But what happens when two algorithms have the same complexity? Are they always equally fast?
 
 The answer, perhaps surprisingly, is no. In this post, we'll explore a fascinating example that demonstrates how the underlying hardware, specifically the CPU cache, can have a dramatic impact on performance. We'll look at two O(n²) algorithms for traversing a 2D matrix and see why one is significantly faster than the other, thanks to a concept called **cache locality**.
 
@@ -64,7 +70,8 @@ Both of these functions have two nested loops, each running `n` times (where `n`
 
 ### The Performance Difference: It's All About the Cache
 
-In languages like C, C++, and Python (with NumPy), 2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously, followed by the elements of the second row, and so on.
+2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
+2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
 
 ![Row-Major Order](https://i.imgur.com/2X2bB8c.png)
 
@@ -74,39 +81,10 @@ In languages like C, C++, and Python (with NumPy), 2D arrays are typically store
 
 ### Let's Benchmark It
 
-We can use Python's `timeit` module to see the difference.
+Now of course, the previous section showed you a *Python* code snippet but we will not using it for this experiment. Primiarly because, if you ran the previous code, you will see that there is no difference between the two algos. They both take really realy long lol - the bottleneck here comes from Python's typechecking and other library level implementations. 
 
-```python
-import numpy as np
-import timeit
+I will probably plan another blog to expand more on a *Python* specific differences for this algo :)
 
-# Create a large 10000x10000 matrix
-matrix = np.ones((10000, 10000))
-
-def sum_row_major(matrix):
-    total = 0
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            total += matrix[i, j]
-    return total
-
-def sum_column_major(matrix):
-    total = 0
-    for j in range(matrix.shape[1]):
-        for i in range(matrix.shape[0]):
-            total += matrix[i, j]
-    return total
-
-# Benchmark
-row_time = timeit.timeit(lambda: sum_row_major(matrix), number=1)
-col_time = timeit.timeit(lambda: sum_column_major(matrix), number=1)
-
-print(f"Row-major traversal time: {row_time:.4f} seconds")
-print(f"Column-major traversal time: {col_time:.4f} seconds")
-print(f"Difference: Column-major is {col_time / row_time:.2f}x slower")
-```
-
-When you run this, you'll see a significant difference. The row-major traversal will be much faster. The exact numbers will depend on your machine, but it's not uncommon to see the column-major traversal being 5-10x slower or even more!
 
 ### A C++ Demonstration
 
