@@ -9,7 +9,7 @@
 <p>While incredibly useful, Big O notation deliberately ignores constants and lower-order terms. It doesn’t care about the exact number of operations, but rather the growth rate. This means that two O(n²) algorithms might have very different constant factors, leading to different real-world performance.</p>
 <h3 id="the-memory-hierarchy-and-cache-locality">The Memory Hierarchy and Cache Locality</h3>
 <p>Modern computers have a memory hierarchy. At the top, we have CPU registers, which are extremely fast but very small. Then we have multiple levels of cache (L1, L2, L3), which are progressively larger but slower. Finally, we have the main memory (RAM), which is much larger but also much slower than the cache.</p>
-<p><img src="/src/assets/blogs/cache_locality/Mem_Hierarchy.png" alt="Memory Hierarchy">
+<p><img alt="Memory Hierarchy" loading="lazy" decoding="async" fetchpriority="auto" width="2816" height="1536" src="/astro/Mem_Hierarchy.CrUFd4U2_1QAyhL.webp" >
 <em>Image Credits - Nano Banana Pro</em></p>
 <p>When the CPU needs to access data, it first checks the L1 cache. If the data is there (a <strong>cache hit</strong>), it’s accessed very quickly. If not (a <strong>cache miss</strong>), the CPU checks the L2 cache, then L3, and finally RAM. Each level of miss incurs a significant performance penalty.</p>
 <p>To minimize cache misses, modern CPUs are designed to exploit two principles of locality:</p>
@@ -47,7 +47,7 @@
 <h3 id="the-performance-difference-its-all-about-the-cache">The Performance Difference: It’s All About the Cache</h3>
 <p>2D arrays are typically stored in memory in <strong>row-major order</strong>. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
 2D arrays are typically stored in memory in <strong>row-major order</strong>. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.</p>
-<p><img src="/src/assets/blogs/cache_locality/ColMajTraversal.png" alt="Row-Major Order">
+<p><img alt="Row-Major Order" loading="lazy" decoding="async" fetchpriority="auto" width="2816" height="1536" src="/astro/ColMajTraversal.DqHU4wTy_1X2Iar.webp" >
 <em>Image Credits - Nano Banana Pro</em></p>
 <p><strong>Row-major traversal</strong> accesses the elements in the exact order they are laid out in memory: <code>matrix[0,0]</code>, <code>matrix[0,1]</code>, <code>matrix[0,2]</code>, … This is a perfect example of spatial locality. When the CPU fetches the first element, it also loads the next few elements into the cache line. Subsequent accesses are then lightning-fast cache hits.</p>
 <p><strong>Column-major traversal</strong>, on the other hand, jumps around in memory. It accesses <code>matrix[0,0]</code>, then <code>matrix[1,0]</code>, then <code>matrix[2,0]</code>, etc. These elements are far apart in memory (separated by the length of a full row). Each access is likely to result in a cache miss, forcing the CPU to go all the way to RAM, which is orders of magnitude slower.</p>
