@@ -25,7 +25,8 @@ While incredibly useful, Big O notation deliberately ignores constants and lower
 
 Modern computers have a memory hierarchy. At the top, we have CPU registers, which are extremely fast but very small. Then we have multiple levels of cache (L1, L2, L3), which are progressively larger but slower. Finally, we have the main memory (RAM), which is much larger but also much slower than the cache.
 
-![Memory Hierarchy](https://i.imgur.com/s3yZz6X.png)
+![Memory Hierarchy](/src/assets/blogs/cache_locality/Mem_Hierarchy.png)
+*Image Credits - Nano Banana Pro*
 
 When the CPU needs to access data, it first checks the L1 cache. If the data is there (a **cache hit**), it's accessed very quickly. If not (a **cache miss**), the CPU checks the L2 cache, then L3, and finally RAM. Each level of miss incurs a significant performance penalty.
 
@@ -73,7 +74,8 @@ Both of these functions have two nested loops, each running `n` times (where `n`
 2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
 2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
 
-![Row-Major Order](https://i.imgur.com/2X2bB8c.png)
+![Row-Major Order](/src/assets/blogs/cache_locality/ColMajTraversal.png)
+*Image Credits - Nano Banana Pro*
 
 **Row-major traversal** accesses the elements in the exact order they are laid out in memory: `matrix[0,0]`, `matrix[0,1]`, `matrix[0,2]`, ... This is a perfect example of spatial locality. When the CPU fetches the first element, it also loads the next few elements into the cache line. Subsequent accesses are then lightning-fast cache hits.
 
@@ -97,34 +99,37 @@ The effect is even more pronounced in a language like C++ where we have more dir
 
 const int SIZE = 10000;
 
+using namespace std;  //to make the code less cluttered hehe
+
 int main() {
-    std::vector<std::vector<int>> matrix(SIZE, std::vector<int>(SIZE, 1));
+    vector<vector<int>> matrix(SIZE, vector<int>(SIZE, 1));
 
     // Row-major traversal
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
     long long sum1 = 0;
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             sum1 += matrix[i][j];
         }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> row_duration = end - start;
-    std::cout << "Row-major traversal time: " << row_duration.count() << " seconds" << std::endl;
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> row_duration = end - start;
+    cout << "Row-major traversal time: " << row_duration.count() << "seconds" << endl;
+
 
     // Column-major traversal
-    start = std::chrono::high_resolution_clock::now();
+    start = chrono::high_resolution_clock::now();
     long long sum2 = 0;
     for (int j = 0; j < SIZE; ++j) {
         for (int i = 0; i < SIZE; ++i) {
             sum2 += matrix[i][j];
         }
     }
-    end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> col_duration = end - start;
-    std::cout << "Column-major traversal time: " << col_duration.count() << " seconds" << std::endl;
+    end = chrono::high_resolution_clock::now();
+    chrono::duration<double> col_duration = end - start;
+    cout << "Column-major traversal time: " << col_duration.count() << " seconds" << endl;
 
-    std::cout << "Difference: Column-major is " << col_duration.count() / row_duration.count() << "x slower" << std::endl;
+    cout << "Difference: Column-major is " << col_duration.count() / row_duration.count() << "x slower" << endl;
 
     return 0;
 }

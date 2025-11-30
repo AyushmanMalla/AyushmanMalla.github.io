@@ -1,8 +1,8 @@
 # Personal Portfolio/Blog Page Repo
 
-## 🚀 Project Structure
+## Project Structure
 
-Repo follows the following struct - had to make changes to the default Astro tempalte for github pages deployment project, you'll see the following folders and files:
+Repo follows the following struct - had to make changes to the default Astro template for github pages deployment project, you'll see the following folders and files:
 
 ```text
 ├── .nojekyll
@@ -33,7 +33,7 @@ The `src/content/` directory contains "collections" of related Markdown and MDX 
 
 Any static assets, like images, can be placed in the `public/` directory.
 
-## 🧞 Commands
+## Commands
 
 All commands are run from the root of the project, from a terminal:
 
@@ -46,10 +46,14 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## Theme Palette
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The project uses a custom color palette defined in `tailwind.config.cjs`:
 
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+| Color Name | Hex Code | Usage |
+| :--- | :--- | :--- |
+| **Background** | `#000000` | Main page background |
+| **Primary** | `#FE2600` | Primary accent color (Red) |
+| **Accent** | `#FF5B3E` | Secondary accent/Hover states |
+| **Secondary** | `#FF917D` | Muted text or subtle highlights |
+| **Dark Card** | `#1E1E1E` | Card backgrounds (e.g., blog posts) |
