@@ -20,31 +20,23 @@ const isGraphicLeft = direction === 'left';
 
 <section class="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
   <!-- Graphic Column -->
-  <div class:list={["relative w-full h-full min-h-[300px]", { 'md:order-last': !isGraphicLeft }]}>
+  <div class:list={["w-full", { 'md:order-last': !isGraphicLeft }]}>
     {graphic && (
       <>
         {typeof graphic === 'string' && graphic.endsWith('.mp4') ? (
-          <video src={graphic} autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+          <video src={graphic} autoplay loop muted playsinline class="w-full h-auto rounded-xl shadow-lg"></video>
         ) : typeof graphic === 'string' && graphic.endsWith('.gif') ? (
-          <img src={graphic} alt={company} class="absolute inset-0 w-full h-full object-cover" />
+          <img src={graphic} alt={company} class="w-full h-auto rounded-xl shadow-lg" />
         ) : (
-          <Image src={graphic} alt={company} width={1200} height={800} class="absolute inset-0 w-full h-full object-cover" />
+          <Image src={graphic} alt={company} width={1200} height={800} class="w-full h-auto rounded-xl shadow-lg" />
         )}
       </>
     )}
-    <!-- Gradient Overlay -->
-    <div
-      class:list={[
-        "absolute inset-0",
-        { 'bg-gradient-to-l from-background via-background/5 to-transparent': isGraphicLeft },
-        { 'bg-gradient-to-r from-background via-background/5 to-transparent': !isGraphicLeft },
-      ]}
-    ></div>
   </div>
 
   <!-- Content Column -->
-  <div class:list={["py-12 px-4 sm:px-6 lg:px-20", { 'md:order-first': !isGraphicLeft }]}>
-    <div class:list={["max-w-lg mx-auto", { 'md:ml-auto md:mr-0': isGraphicLeft, 'md:mr-auto md:ml-0': !isGraphicLeft }]}>
+  <div class:list={["py-6 md:py-0", { 'md:order-first': !isGraphicLeft }]}>
+    <div class:list={["max-w-lg", { 'md:mr-auto': isGraphicLeft, 'md:ml-auto': !isGraphicLeft }]}>
       <p class="text-sm text-slate-400 mb-2">{date}</p>
       <h3 class="text-3xl font-bold text-slate-100 mb-3">{company}</h3>
       <h4 class="text-xl font-semibold text-primary mb-4">{title}</h4>

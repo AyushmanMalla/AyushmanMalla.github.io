@@ -1,9 +1,9 @@
 ---
 import Layout from '../layouts/FullWidthLayout.astro';
 import InternshipCard from '../components/InternshipCard.astro';
-import TranscelestialImage from '../assets/Transcelestial.jpeg';
+import TranscelestialImage from '../assets/Transcelestial.png';
 import AMDImage from '../assets/AMD.png';
-import UnileverImage from '../assets/Unilever.jpeg';
+import UnileverImage from '../assets/Unilever.jpg';
 
 const internships = [
   {
@@ -24,7 +24,7 @@ const internships = [
     title: 'Technology and Finance Intern',
     date: 'May 2024',
     graphic: UnileverImage, // Placeholder
-    description: 'I worked at the intersection of Tech, Finance, and Supply Chain, working to digitize how the company handles business waste. My goal was to build a robust validation system that could stand up to rigorous accounting principles - the idea was to build a tool that can bridge the gap between real inventory risk(supply chain) and probably inventory risk(accounting). Built an end-to-end data injestion tool that reconciles reports from cross functional teams and suggests immediate actions for Supply Chain Planners to manage inventory risk. The system is expected to provide clarity needed to unlock approximately $1 million USD in annual savings for each business group within Unilever.',
+    description: 'I worked at the intersection of Tech, Finance, and Supply Chain, working to digitize how the company handles business waste. My goal was to build a robust validation system that could stand up to rigorous accounting principles - the idea was to build a tool that can bridge the gap between real inventory risk(supply chain) and probably inventory risk(accounting). Built an end-to-end data ingestion tool that reconciles reports from cross functional teams and suggests immediate actions for Supply Chain Planners to manage inventory risk. The system is expected to provide clarity needed to unlock approximately $1 million USD in annual savings for each business group within Unilever.',
   },
 ].sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf());
 ---
