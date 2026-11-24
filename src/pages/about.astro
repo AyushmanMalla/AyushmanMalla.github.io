@@ -1,40 +1,44 @@
 ---
-import AboutHeroImage from '../assets/About.mp4';
-import Layout from '../layouts/BlogPost.astro';
+import AboutPoster from '../assets/about-poster.webp';
+import HeroMedia from '../components/HeroMedia.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('2025')}
-	heroImage={AboutHeroImage}
+<BaseLayout
+	title="About"
+	description="About Ayushman Malla — hardware engineer exploring FPGA design, high-level synthesis, digital verification, and applied AI."
+	mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6"
 >
-	<p>
-	Hi, I’m Ayushman Malla — a hardware engineer and builder who enjoys thinking at the intersection of computing, 
-    design, and intelligence. I’m currently exploring how abstraction, verification, and synthesis shape the boundary between algorithms 
-	and silicon. My work often revolves around FPGA design, high-level synthesis (HLS), and digital verification, with a deep curiosity 
-	about how hardware can be reimagined for AI and high-performance systems.
-	</p>
+	<section class="py-12">
+		<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">About Me</h1>
+		<p class="mt-3 text-base text-muted-foreground">
+			Hardware engineer thinking at the intersection of computing, verification, and intelligence.
+		</p>
 
-	<p>
-	Recently, I’ve been working at Transcelestial as an FPGA/Hardware Engineering Intern, developing a kind of packet forwader for 10G Ethernet.
-	Beyond hardware, I’ve built some fun AI/ML Projects ranging from financial analytics tools to deep learning models for Medical Imaging and Autonomous
-	Vehicles. I enjoy bridging low-level systems knowledge with modern ML models, understanding the full stack from transistor logic to inference runtime.
-	</p>
+		<div class="my-8">
+			<HeroMedia
+				image={AboutPoster}
+				video="/media/about.mp4"
+				alt="Kinetic typography header for About Ayushman Malla"
+				aspectClass="aspect-[16/9]"
+				class="rounded-xl border border-border"
+				priority={true}
+			/>
+		</div>
 
-	<p>
-		Outside of engineering, I find satisfaction in solving math puzzles((for some reason I am obssessed with Rubik's cubes), watching people cook and playing tennis!
-		I value precision, iteration, and clarity of thought — qualities that guide how I approach both design problems 
-		and life in general.
-	</p>
-
-	<p>
-		I’m also fascinated by meta-cognition: how people structure knowledge, synthesize abstractions, and turn insight into execution. I usually try to focus 
-		on sharpening my reasoning frameworks.
-	</p>
-
-	<p>
-		This portfolio is a space where I share my projects, reflections, and ideas — from technical breakdowns to thought experiments. 
-		At its core, it’s a record of one ongoing pursuit: to build systems — and ways of thinking — that scale.
-	</p>
-</Layout>
+		<div class="space-y-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+			<p>
+				Hi, I’m Ayushman Malla — a hardware engineer and builder who enjoys thinking at the intersection of computing, design, and intelligence. I’m currently exploring how abstraction, verification, and synthesis shape the boundary between algorithms and silicon. My work revolves around FPGA design, high-level synthesis (HLS), and digital verification, with a deep curiosity about how hardware can be reimagined for AI and high-performance systems.
+			</p>
+			<p>
+				Recently, I worked at Transcelestial as an FPGA/Hardware Engineering Intern, developing a 10G Ethernet packet forwarder on Xilinx Zynq UltraScale+ MPSoC, following an internship at AMD debugging EPYC CPU memory subsystems. Beyond hardware, I’ve built AI/ML projects ranging from financial analytics tools to deep learning models for medical imaging and autonomous vehicles — enjoying the full stack from transistor logic to inference runtime.
+			</p>
+			<p>
+				Outside of engineering, I find satisfaction in solving math puzzles (for some reason I am obsessed with Rubik’s cubes), watching people cook, and playing tennis. I value precision, iteration, and clarity of thought — qualities that guide how I approach both design problems and life in general.
+			</p>
+			<p>
+				I’m also fascinated by meta-cognition: how people structure knowledge, synthesize abstractions, and turn insight into execution. This portfolio is a space where I share my projects, reflections, and ideas — from technical breakdowns to thought experiments. At its core, it’s a record of one ongoing pursuit: to build systems, and ways of thinking, that scale.
+			</p>
+		</div>
+	</section>
+</BaseLayout>

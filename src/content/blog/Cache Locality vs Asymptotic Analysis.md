@@ -1,8 +1,11 @@
 ---
-title: 'Cache Locality v/s Asymptotic Analysis'
-description: 'Cache Locality v/s Asymptotic Analysis'
+title: 'Cache Locality vs. Asymptotic Analysis'
+description: 'Why two O(n²) matrix traversal algorithms perform dramatically differently on real CPU memory hierarchies.'
 pubDate: 'Nov 18 2025'
-heroImage: '../../assets/wave.gif'
+heroImage: '../../assets/wave-poster.webp'
+heroVideo: '/media/wave.webm'
+heroAlt: 'Kinetic wave typography visual for Cache Locality'
+tags: ['Memory Hierarchy', 'Cache Locality', 'C++']
 ---
 
 The inspiration for this blog stems from a discussion I had with a James - a Tech Fellow from Goldman Sachs(not outing his full name here) who primarily works on HPC and file systems. The context of this conversation was what he looks for in candidates applying to be a part of his team and what usually stands out. 
@@ -72,7 +75,6 @@ Both of these functions have two nested loops, each running `n` times (where `n`
 ### The Performance Difference: It's All About the Cache
 
 2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
-2D arrays are typically stored in memory in **row-major order**. This means that the elements of the first row are stored contiguously in memory, followed by the elements of the second row, and so on.
 
 ![Row-Major Order](../../assets/blogs/cache_locality/ColMajTraversal.png)
 *Image Credits - Nano Banana Pro*
@@ -83,7 +85,7 @@ Both of these functions have two nested loops, each running `n` times (where `n`
 
 ### Let's Benchmark It
 
-Now of course, the previous section showed you a *Python* code snippet but we will not using it for this experiment. Primiarly because, if you ran the previous code, you will see that there is no difference between the two algos. They both take really realy long lol - the bottleneck here comes from Python's typechecking and other library level implementations. 
+Now of course, the previous section showed you a *Python* code snippet, but we won't use it for this experiment. Primarily because if you run the previous code, you will see very little difference between the two loops—they both take really, really long lol. The bottleneck here comes from Python's dynamic type checking and interpreter overhead rather than L1/L2 cache misses. 
 
 I will probably plan another blog to expand more on a *Python* specific differences for this algo :)
 

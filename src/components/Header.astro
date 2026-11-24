@@ -1,20 +1,37 @@
 ---
-import { SITE_TITLE } from '../consts';
-import HeaderLink from './HeaderLink.astro';
+import { NAV_LINKS, SITE_TITLE } from '../consts';
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+	href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
 
-<header class="bg-background border-b-2 border-slate-800">
-	<nav class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-		<div class="flex justify-between items-center py-4">
-			<h2 class="text-2xl font-bold text-slate-100 hover:text-accent">
-				<a href="/">Home</a>
-			</h2>
-			<div class="flex space-x-4">
-				<!-- <HeaderLink href="/">Home</HeaderLink> -->
-				<HeaderLink href="/blog">Blog</HeaderLink>
-				<HeaderLink href="/internships">Internships</HeaderLink>
-				<HeaderLink href="/about">About</HeaderLink>
-			</div>
-		</div>
+<header class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
+	<nav
+		aria-label="Primary navigation"
+		class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6"
+	>
+		<a
+			href="/"
+			class="text-base font-semibold tracking-tight text-foreground transition-colors hover:text-accent"
+		>
+			{SITE_TITLE}
+		</a>
+		<ul class="flex items-center gap-5 sm:gap-7">
+			{NAV_LINKS.map((item) => (
+				<li>
+					<a
+						href={item.href}
+						aria-current={isActive(item.href) ? 'page' : undefined}
+						class:list={[
+							'text-sm transition-colors hover:text-foreground',
+							isActive(item.href) ? 'font-semibold text-accent' : 'text-muted-foreground',
+						]}
+					>
+						{item.label}
+					</a>
+				</li>
+			))}
+		</ul>
 	</nav>
 </header>

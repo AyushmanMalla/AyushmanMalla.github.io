@@ -1,20 +1,25 @@
 ---
-const today = new Date();
+import { SITE_TITLE, SOCIAL_LINKS } from '../consts';
+
+const year = new Date().getFullYear();
 ---
 
-<footer class="text-center py-8">
-	<div class="text-slate-400">
-		&copy; {today.getFullYear()} Ayushman Malla. All rights reserved.
-	</div>
-	<div class="flex justify-center space-x-6 mt-4">
-		<a href="https://github.com/AyushmanMalla" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent">
-			GitHub
-		</a>
-		<a href="https://www.linkedin.com/in/ayushman-malla-952900229/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-accent">
-			LinkedIn
-		</a>
-		<a href="mailto:ayushman.malla@e.ntu.edu.sg" class="text-slate-400 hover:text-accent">
-			Email
-		</a>
+<footer class="mt-20 border-t border-border">
+	<div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
+		<p>&copy; {year} {SITE_TITLE}</p>
+		<div class="flex flex-wrap items-center gap-5">
+			<a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-foreground">
+				GitHub
+			</a>
+			<a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-foreground">
+				LinkedIn
+			</a>
+			<a href={SOCIAL_LINKS.email} class="transition-colors hover:text-foreground">
+				Email
+			</a>
+			<a href="/rss.xml" class="transition-colors hover:text-foreground">
+				RSS
+			</a>
+		</div>
 	</div>
 </footer>

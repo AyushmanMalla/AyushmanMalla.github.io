@@ -1,0 +1,50 @@
+---
+import type { ImageMetadata } from 'astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+interface Props {
+	title?: string;
+	description?: string;
+	image?: ImageMetadata;
+	includeVerification?: boolean;
+	mainClass?: string;
+}
+
+const {
+	title = SITE_TITLE,
+	description = SITE_DESCRIPTION,
+	image,
+	includeVerification = false,
+	mainClass = 'mx-auto w-full max-w-5xl px-4 sm:px-6',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={title}
+			description={description}
+			image={image}
+			includeVerification={includeVerification}
+		>
+			<slot name="head" />
+		</BaseHead>
+	</head>
+	<body class="flex min-h-dvh flex-col bg-background text-foreground font-sans">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-invert focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-invert-foreground"
+		>
+			Skip to content
+		</a>
+		<Header />
+		<main id="main-content" class:list={['flex-1', mainClass]}>
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>

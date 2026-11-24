@@ -1,46 +1,51 @@
 ---
 import { Image } from 'astro:assets';
+import type { Internship } from '../data/experience';
 
-export interface Props {
-  internship: {
-    company: string;
-    title: string;
-    date: string;
-    graphic: string;
-    description: string;
-  };
-  direction?: 'left' | 'right';
+interface Props {
+	internship: Internship;
 }
 
-const { internship, direction = 'left' } = Astro.props;
-const { company, title, date, graphic, description } = internship;
-
-const isGraphicLeft = direction === 'left';
+const { internship } = Astro.props;
+const aspectClass = internship.aspectHint === 'wide' ? 'aspect-[21/9]' : 'aspect-video';
 ---
 
-<section class="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
-  <!-- Graphic Column -->
-  <div class:list={["w-full", { 'md:order-last': !isGraphicLeft }]}>
-    {graphic && (
-      <>
-        {typeof graphic === 'string' && graphic.endsWith('.mp4') ? (
-          <video src={graphic} autoplay loop muted playsinline class="w-full h-auto rounded-xl shadow-lg"></video>
-        ) : typeof graphic === 'string' && graphic.endsWith('.gif') ? (
-          <img src={graphic} alt={company} class="w-full h-auto rounded-xl shadow-lg" />
-        ) : (
-          <Image src={graphic} alt={company} width={1200} height={800} class="w-full h-auto rounded-xl shadow-lg" />
-        )}
-      </>
-    )}
-  </div>
+<article class="grid grid-cols-1 items-start gap-6 rounded-xl border border-border bg-surface p-5 sm:p-7 lg:grid-cols-12 lg:gap-8">
+	<div class="lg:col-span-5">
+		<div class:list={['w-full overflow-hidden rounded-lg border border-border bg-surface-subtle', aspectClass]}>
+			<Image
+				src={internship.graphic}
+				alt={internship.graphicAlt}
+				width={960}
+				height={540}
+				class="h-full w-full object-cover"
+			/>
+		</div>
+	</div>
 
-  <!-- Content Column -->
-  <div class:list={["py-6 md:py-0", { 'md:order-first': !isGraphicLeft }]}>
-    <div class:list={["max-w-lg", { 'md:mr-auto': isGraphicLeft, 'md:ml-auto': !isGraphicLeft }]}>
-      <p class="text-sm text-slate-400 mb-2">{date}</p>
-      <h3 class="text-3xl font-bold text-slate-100 mb-3">{company}</h3>
-      <h4 class="text-xl font-semibold text-primary mb-4">{title}</h4>
-      <p class="text-slate-300 leading-relaxed">{description}</p>
-    </div>
-  </div>
-</section>
+	<div class="space-y-4 lg:col-span-7">
+		<div class="flex flex-wrap items-baseline justify-between gap-2">
+			<div>
+				<h2 class="text-2xl font-bold tracking-tight text-foreground">{internship.company}</h2>
+				<p class="text-base font-medium text-accent">{internship.role}</p>
+			</div>
+			<p class="font-mono text-xs text-muted-foreground">
+				{internship.period} · {internship.location}
+			</p>
+		</div>
+
+		<ul class="flex flex-wrap gap-2">
+			{internship.highlights.map((tag) => (
+				<li class="rounded-md border border-border bg-surface-subtle px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
+					{tag}
+				</li>
+			))}
+		</ul>
+
+		<div class="space-y-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+			{internship.paragraphs.map((paragraph) => (
+				<p>{paragraph}</p>
+			))}
+		</div>
+	</div>
+</article>

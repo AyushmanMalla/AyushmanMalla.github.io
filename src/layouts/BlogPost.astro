@@ -1,63 +1,70 @@
 ---
-import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import HeroMedia from '../components/HeroMedia.astro';
+import BaseLayout from './BaseLayout.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	readingTime?: number;
+	headings?: MarkdownHeading[];
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	heroVideo,
+	heroAlt,
+	tags = [],
+	readingTime,
+} = Astro.props;
 ---
 
-<html lang="en" class="dark">
-	<head>
-		<BaseHead title={title} description={description} />
-	</head>
+<BaseLayout title={title} description={description} image={heroImage} mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6">
+	<article class="py-10 sm:py-14">
+		<header class="mb-8 space-y-4">
+			<div class="flex flex-wrap items-center gap-3 font-mono text-xs text-muted-foreground">
+				<FormattedDate date={pubDate} />
+				{updatedDate && (
+					<span>· Updated <FormattedDate date={updatedDate} /></span>
+				)}
+				{readingTime && <span>· {readingTime} min read</span>}
+			</div>
+			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
+				{title}
+			</h1>
+			<p class="text-base text-muted-foreground sm:text-lg">
+				{description}
+			</p>
+			{tags.length > 0 && (
+				<ul class="flex flex-wrap gap-2 pt-1">
+					{tags.map((tag) => (
+						<li class="rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
+							{tag}
+						</li>
+					))}
+				</ul>
+			)}
+		</header>
 
-	<body class="bg-background text-slate-200">
-		<Header />
-		<main class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-			<article>
-				<div class="py-8">
-					<!-- {heroImage && <Image width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>} -->
+		{(heroVideo || heroImage) && (
+			<div class="mb-10">
+				<HeroMedia
+					image={heroImage}
+					video={heroVideo}
+					alt={heroAlt ?? title}
+					aspectClass="aspect-[2/1]"
+					class="rounded-xl border border-border"
+					priority={true}
+				/>
+			</div>
+		)}
 
-					{heroImage && (
-                        <>
-                            {typeof heroImage === 'string' ? (
-                                heroImage.endsWith('.mp4') ? (
-                                    <video width={1020} height={510} src={heroImage} autoplay loop muted class="w-full h-auto rounded-lg shadow-md mb-8"></video>
-                                ) : (
-                                    <img width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>
-                                )
-                            ) : (
-                                <Image width={1020} height={510} src={heroImage} alt="" class="w-full h-auto rounded-lg shadow-md mb-8"/>
-                            )}
-                        </>
-                    )}
-				</div>
-				<div class="prose prose-lg prose-invert max-w-none">
-					<div class="text-center mb-8">
-						<p class="text-base text-slate-400">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<span class="italic">
-										(Last updated on <FormattedDate date={updatedDate} />)
-									</span>
-								)
-							}
-						</p>
-						<h1 class="text-4xl font-bold tracking-tight text-slate-100 sm:text-5xl">
-							{title}
-						</h1>
-						<hr class="mt-6 border-slate-700" />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+		<div class="prose prose-invert prose-lg max-w-none prose-headings:scroll-mt-24 prose-a:text-accent prose-a:no-underline hover:prose-a:underline">
+			<slot />
+		</div>
+	</article>
+</BaseLayout>

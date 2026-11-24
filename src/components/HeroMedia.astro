@@ -1,0 +1,120 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+	image?: ImageMetadata;
+	video?: string;
+	alt?: string;
+	aspectClass?: string;
+	class?: string;
+	priority?: boolean;
+}
+
+const {
+	image,
+	video,
+	alt = '',
+	aspectClass = 'aspect-[2/1]',
+	class: className = '',
+	priority = false,
+} = Astro.props;
+
+const posterUrl = image?.src;
+const videoType = video?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
+---
+
+{(video || image) && (
+	<div
+		class:list={[
+			'relative w-full overflow-hidden bg-surface-subtle',
+			aspectClass,
+			className,
+		]}
+		data-kinetic-media
+	>
+		{video ? (
+			<>
+				<video
+					src={video}
+					poster={posterUrl}
+					autoplay
+					loop
+					muted
+					playsinline
+					preload={priority ? 'auto' : 'metadata'}
+					aria-label={alt || 'Kinetic typography visual'}
+					class="h-full w-full object-cover"
+				>
+					<source src={video} type={videoType} />
+				</video>
+				<button
+					type="button"
+					data-media-toggle
+					aria-label="Pause animation"
+					class="absolute right-3 bottom-3 z-10 inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/85 px-2.5 py-1 font-mono text-xs text-foreground backdrop-blur-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+				>
+					<span data-media-icon aria-hidden="true">❚❚</span>
+					<span data-media-label>Pause</span>
+				</button>
+			</>
+		) : (
+			image && (
+				<Image
+					src={image}
+					alt={alt}
+					width={1280}
+					height={640}
+					loading={priority ? 'eager' : 'lazy'}
+					decoding={priority ? 'sync' : 'async'}
+					class="h-full w-full object-cover"
+				/>
+			)
+		)}
+	</div>
+)}
+
+<script>
+	function initKineticMedia() {
+		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		document.querySelectorAll<HTMLElement>('[data-kinetic-media]').forEach((container) => {
+			if (container.dataset.bound === 'true') return;
+			container.dataset.bound = 'true';
+
+			const video = container.querySelector<HTMLVideoElement>('video');
+			const button = container.querySelector<HTMLButtonElement>('[data-media-toggle]');
+			if (!video || !button) return;
+
+			const icon = button.querySelector<HTMLElement>('[data-media-icon]');
+			const label = button.querySelector<HTMLElement>('[data-media-label]');
+
+			const syncUi = (paused: boolean) => {
+				button.setAttribute('aria-label', paused ? 'Play animation' : 'Pause animation');
+				if (icon) icon.textContent = paused ? '▶' : '❚❚';
+				if (label) label.textContent = paused ? 'Play' : 'Pause';
+			};
+
+			if (prefersReduced) {
+				video.pause();
+				syncUi(true);
+			} else {
+				syncUi(false);
+			}
+
+			button.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				if (video.paused) {
+					video.play().catch(() => {});
+					syncUi(false);
+				} else {
+					video.pause();
+					syncUi(true);
+				}
+			});
+		});
+	}
+
+	initKineticMedia();
+	document.addEventListener('astro:after-swap', initKineticMedia);
+</script>
