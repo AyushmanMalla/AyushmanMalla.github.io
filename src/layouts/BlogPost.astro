@@ -3,6 +3,7 @@ import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import HeroMedia from '../components/HeroMedia.astro';
+import { SOCIAL_LINKS } from '../consts';
 import BaseLayout from './BaseLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
@@ -23,26 +24,49 @@ const {
 } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} image={heroImage} mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6">
+<BaseLayout
+	title={title}
+	description={description}
+	image={heroImage}
+	mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6"
+>
+	<div class="reading-progress" aria-hidden="true"></div>
+
 	<article class="py-10 sm:py-14">
+		<div class="mb-6">
+			<a
+				href="/blog/"
+				class="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
+				<span aria-hidden="true">←</span>
+				<span>Back to writing</span>
+			</a>
+		</div>
+
 		<header class="mb-8 space-y-4">
-			<div class="flex flex-wrap items-center gap-3 font-mono text-xs text-muted-foreground">
-				<FormattedDate date={pubDate} />
+			<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
+				<span class="inline-flex items-center gap-1.5 text-accent">
+					<span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-[1px] bg-accent" />
+					<FormattedDate date={pubDate} />
+				</span>
 				{updatedDate && (
 					<span>· Updated <FormattedDate date={updatedDate} /></span>
 				)}
 				{readingTime && <span>· {readingTime} min read</span>}
 			</div>
-			<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
+
+			<h1 class="heading-page font-bold text-foreground">
 				{title}
 			</h1>
-			<p class="text-base text-muted-foreground sm:text-lg">
+
+			<p class="text-base leading-relaxed text-muted-foreground sm:text-lg">
 				{description}
 			</p>
+
 			{tags.length > 0 && (
-				<ul class="flex flex-wrap gap-2 pt-1">
+				<ul class="flex flex-wrap gap-2 pt-1" aria-label="Post topics">
 					{tags.map((tag) => (
-						<li class="rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
+						<li class="rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-foreground/85">
 							{tag}
 						</li>
 					))}
@@ -57,14 +81,35 @@ const {
 					video={heroVideo}
 					alt={heroAlt ?? title}
 					aspectClass="aspect-[2/1]"
-					class="rounded-xl border border-border"
+					class="rounded-2xl border border-border"
 					priority={true}
 				/>
 			</div>
 		)}
 
-		<div class="prose prose-invert prose-lg max-w-none prose-headings:scroll-mt-24 prose-a:text-accent prose-a:no-underline hover:prose-a:underline">
+		<div class="mb-10 flex items-center gap-3" aria-hidden="true">
+			<span class="h-[2px] w-12 bg-accent" />
+			<span class="h-px flex-1 bg-border" />
+		</div>
+
+		<div class="prose prose-invert prose-obsidian prose-lg max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight">
 			<slot />
 		</div>
+
+		<footer class="mt-14 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+			<a
+				href="/blog/"
+				class="inline-flex items-center gap-2 font-mono text-xs text-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
+				<span aria-hidden="true">←</span>
+				<span>All technical notes</span>
+			</a>
+			<a
+				href={SOCIAL_LINKS.email}
+				class="font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
+				Questions or thoughts? Email me →
+			</a>
+		</footer>
 	</article>
 </BaseLayout>

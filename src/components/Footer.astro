@@ -4,20 +4,39 @@ import { SITE_TITLE, SOCIAL_LINKS } from '../consts';
 const year = new Date().getFullYear();
 ---
 
-<footer class="mt-20 border-t border-border">
+<footer class="mt-20 border-t border-border bg-background">
 	<div class="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-		<p>&copy; {year} {SITE_TITLE}</p>
-		<div class="flex flex-wrap items-center gap-5">
-			<a href={SOCIAL_LINKS.github} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-foreground">
+		<p class="inline-flex items-center gap-2.5">
+			<span aria-hidden="true" class="inline-block h-2 w-2 rounded-[2px] bg-accent" />
+			<span>&copy; {year} {SITE_TITLE}</span>
+		</p>
+		<div class="flex flex-wrap items-center gap-5 font-mono text-xs">
+			<a
+				href={SOCIAL_LINKS.github}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="py-1 transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
 				GitHub
 			</a>
-			<a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-foreground">
+			<a
+				href={SOCIAL_LINKS.linkedin}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="py-1 transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
 				LinkedIn
 			</a>
-			<a href={SOCIAL_LINKS.email} class="transition-colors hover:text-foreground">
+			<a
+				href={SOCIAL_LINKS.email}
+				class="py-1 transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
 				Email
 			</a>
-			<a href="/rss.xml" class="transition-colors hover:text-foreground">
+			<a
+				href="/rss.xml"
+				class="py-1 transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+			>
 				RSS
 			</a>
 		</div>

@@ -1,24 +1,35 @@
 ---
 import InternshipCard from '../components/InternshipCard.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import { INTERNSHIPS } from '../data/experience';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
 	title="Internships"
 	description="Professional hardware, FPGA, and systems engineering internship experience at Transcelestial, AMD, and Unilever."
 >
-	<section class="py-12">
-		<h1 class="text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-			Professional Experience
-		</h1>
-		<p class="mt-3 max-w-2xl text-base text-muted-foreground">
-			Hands-on work across 10G Ethernet FPGA pipelines, enterprise CPU cache debug, and supply-chain data systems.
-		</p>
+	<section class="py-10 sm:py-14">
+		<div class="max-w-2xl">
+			<p class="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-accent uppercase">
+				<span aria-hidden="true" class="inline-block h-2 w-2 rounded-[2px] bg-accent" />
+				<span>Experience // Timeline</span>
+			</p>
+			<h1 class="heading-page mt-3 font-bold text-foreground">
+				Professional Experience
+			</h1>
+			<p class="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
+				Hands-on engineering across 10G Ethernet FPGA pipelines, enterprise CPU cache debug, and supply-chain data systems.
+			</p>
+		</div>
+
+		<div class="mt-8 flex items-center gap-3" aria-hidden="true">
+			<span class="h-[2px] w-12 bg-accent" />
+			<span class="h-px flex-1 bg-border" />
+		</div>
 
 		<div class="mt-10 space-y-8">
-			{INTERNSHIPS.map((internship) => (
-				<InternshipCard internship={internship} />
+			{INTERNSHIPS.map((internship, index) => (
+				<InternshipCard internship={internship} index={index} />
 			))}
 		</div>
 	</section>

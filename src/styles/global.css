@@ -9,26 +9,32 @@
 	--color-muted-foreground: var(--muted-foreground);
 	--color-border: var(--border);
 	--color-accent: var(--accent);
+	--color-accent-hover: var(--accent-hover);
 	--color-accent-foreground: var(--accent-foreground);
+	--color-accent-soft: var(--accent-soft);
 	--color-invert: var(--invert);
 	--color-invert-foreground: var(--invert-foreground);
 
 	--font-sans: "Atkinson", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
 	color-scheme: dark;
-	--background: oklch(14% 0.005 260);
-	--foreground: oklch(95% 0.004 260);
-	--surface: oklch(18% 0.006 260);
-	--surface-subtle: oklch(22% 0.007 260);
-	--muted-foreground: oklch(70% 0.008 260);
-	--border: oklch(28% 0.008 260);
-	--accent: oklch(64% 0.21 29);
-	--accent-foreground: oklch(98% 0.002 260);
-	--invert: oklch(95% 0.004 260);
-	--invert-foreground: oklch(14% 0.005 260);
+	/* Warm obsidian + signature vermilion (#FE2600 calibrated in oklch) */
+	--background: oklch(10% 0.004 30);
+	--surface: oklch(15% 0.005 30);
+	--surface-subtle: oklch(19% 0.006 30);
+	--foreground: oklch(96% 0.004 60);
+	--muted-foreground: oklch(71% 0.008 50);
+	--border: oklch(25% 0.007 35);
+	--accent: oklch(62% 0.24 29);
+	--accent-hover: oklch(68% 0.21 31);
+	--accent-foreground: oklch(98% 0.004 60);
+	--accent-soft: color-mix(in oklab, var(--accent) 14%, var(--surface));
+	--accent-border: color-mix(in oklab, var(--accent) 45%, var(--border));
+	--invert: oklch(96% 0.004 60);
+	--invert-foreground: oklch(10% 0.004 30);
 }
 
 @font-face {
@@ -51,25 +57,28 @@
 	@view-transition {
 		navigation: auto;
 	}
+
+	html {
+		scroll-behavior: smooth;
+	}
 }
 
 html {
 	background-color: var(--background);
 	color: var(--foreground);
-	scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	html {
-		scroll-behavior: auto;
-	}
 }
 
 body {
 	min-block-size: 100dvh;
-	line-height: 1.6;
+	line-height: 1.65;
 	overflow-wrap: break-word;
 	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+::selection {
+	background-color: color-mix(in oklab, var(--accent) 32%, var(--background));
+	color: var(--foreground);
 }
 
 h1,
@@ -85,23 +94,189 @@ blockquote {
 	text-wrap: pretty;
 }
 
-/* Prevent code blocks and tables from overflowing narrow viewports */
-.prose pre {
+/* Fluid heading scale (max <= 2.5 * min) */
+.heading-hero {
+	font-size: clamp(2.125rem, 1.35rem + 3.2vw, 3.85rem);
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+}
+
+.heading-page {
+	font-size: clamp(1.875rem, 1.3rem + 2.3vw, 3.125rem);
+	line-height: 1.12;
+	letter-spacing: -0.022em;
+}
+
+.heading-section {
+	font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.95rem);
+	line-height: 1.2;
+	letter-spacing: -0.018em;
+}
+
+/* Compositor-safe card hover lift (no scale-105 jank) */
+.card-lift {
+	transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.card-lift:hover {
+	border-color: var(--accent-border);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.card-lift {
+		transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 180ms ease, background-color 180ms ease;
+	}
+
+	.card-lift:hover {
+		transform: translateY(-2px);
+	}
+}
+
+/* Scroll-driven reading progress bar (BlogPost) */
+.reading-progress {
+	display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	@supports (animation-timeline: scroll()) {
+		@keyframes reading-progress-grow {
+			from {
+				transform: scaleX(0);
+			}
+			to {
+				transform: scaleX(1);
+			}
+		}
+
+		.reading-progress {
+			display: block;
+			position: fixed;
+			inset-block-start: 0;
+			inset-inline: 0;
+			z-index: 60;
+			height: 3px;
+			background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+			transform-origin: 0 50%;
+			pointer-events: none;
+			animation: reading-progress-grow auto linear;
+			animation-timeline: scroll(root block);
+		}
+	}
+}
+
+/* Refined obsidian + vermilion editorial prose */
+.prose-obsidian {
+	--tw-prose-body: oklch(86% 0.006 55);
+	--tw-prose-headings: var(--foreground);
+	--tw-prose-lead: var(--muted-foreground);
+	--tw-prose-links: var(--accent);
+	--tw-prose-bold: var(--foreground);
+	--tw-prose-counters: var(--accent);
+	--tw-prose-bullets: var(--accent);
+	--tw-prose-hr: var(--border);
+	--tw-prose-quotes: oklch(91% 0.005 55);
+	--tw-prose-quote-borders: var(--accent);
+	--tw-prose-captions: var(--muted-foreground);
+	--tw-prose-code: oklch(93% 0.006 55);
+	--tw-prose-pre-code: oklch(92% 0.004 60);
+	--tw-prose-pre-bg: var(--surface);
+	--tw-prose-th-borders: var(--border);
+	--tw-prose-td-borders: color-mix(in oklab, var(--border) 70%, transparent);
+}
+
+.prose-obsidian a {
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in oklab, var(--accent) 45%, transparent);
+	text-underline-offset: 0.22em;
+	transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.prose-obsidian a:hover {
+	color: var(--accent-hover);
+	text-decoration-color: var(--accent-hover);
+}
+
+.prose-obsidian hr {
+	border-color: var(--border);
+	position: relative;
+}
+
+.prose-obsidian blockquote {
+	background-color: var(--surface);
+	border-inline-start: 3px solid var(--accent);
+	border-radius: 0 0.5rem 0.5rem 0;
+	padding: 0.875rem 1.25rem;
+	font-style: italic;
+}
+
+.prose-obsidian :not(pre) > code {
+	background-color: var(--surface-subtle);
+	border: 1px solid var(--border);
+	border-radius: 0.35rem;
+	padding: 0.14em 0.38em;
+	font-size: 0.875em;
+	font-weight: 500;
+}
+
+.prose-obsidian :not(pre) > code::before,
+.prose-obsidian :not(pre) > code::after {
+	content: none;
+}
+
+/* Shiki dual-theme dark override + mobile-safe overflow containment */
+.prose pre,
+.prose pre.astro-code {
 	max-width: 100%;
 	overflow-x: auto;
+	background-color: var(--surface) !important;
+	color: var(--shiki-dark, oklch(92% 0.004 60)) !important;
 	border: 1px solid var(--border);
-	border-radius: 0.5rem;
+	border-radius: 0.75rem;
+	padding: 1.1rem 1.25rem;
+	font-size: 0.875rem;
+	line-height: 1.65;
+}
+
+.prose pre.astro-code span {
+	color: var(--shiki-dark, inherit) !important;
+	background-color: transparent !important;
 }
 
 .prose table {
-	display: block;
+	display: table;
 	width: 100%;
-	overflow-x: auto;
+	max-width: 100%;
 	border-collapse: collapse;
+	font-size: 0.9375rem;
+}
+
+@media (max-width: 640px) {
+	.prose table {
+		display: block;
+		overflow-x: auto;
+	}
+}
+
+.prose thead {
+	background-color: var(--surface);
+	border-bottom: 1px solid var(--border);
+}
+
+.prose tbody tr {
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 75%, transparent);
+}
+
+.prose th,
+.prose td {
+	padding: 0.75rem 1rem;
+	text-align: left;
+	white-space: normal;
 }
 
 .prose img {
 	height: auto;
 	max-width: 100%;
-	border-radius: 0.5rem;
+	border-radius: 0.75rem;
+	border: 1px solid var(--border);
 }

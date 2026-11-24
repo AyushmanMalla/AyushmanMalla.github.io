@@ -52,9 +52,9 @@ const videoType = video?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 					type="button"
 					data-media-toggle
 					aria-label="Pause animation"
-					class="absolute right-3 bottom-3 z-10 inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/85 px-2.5 py-1 font-mono text-xs text-foreground backdrop-blur-sm transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+					class="absolute right-3 bottom-3 z-20 inline-flex min-h-[32px] cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background/85 px-2.5 py-1 font-mono text-xs text-foreground backdrop-blur-sm transition-colors hover:border-accent hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 				>
-					<span data-media-icon aria-hidden="true">❚❚</span>
+					<span data-media-icon aria-hidden="true" class="text-accent">❚❚</span>
 					<span data-media-label>Pause</span>
 				</button>
 			</>

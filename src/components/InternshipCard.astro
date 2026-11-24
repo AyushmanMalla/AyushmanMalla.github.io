@@ -4,48 +4,76 @@ import type { Internship } from '../data/experience';
 
 interface Props {
 	internship: Internship;
+	index: number;
 }
 
-const { internship } = Astro.props;
+const { internship, index } = Astro.props;
+const isReversed = index % 2 === 1;
+const timelineNumber = String(index + 1).padStart(2, '0');
 const aspectClass = internship.aspectHint === 'wide' ? 'aspect-[21/9]' : 'aspect-video';
+const imgWidth = internship.aspectHint === 'wide' ? 1260 : 960;
+const imgHeight = internship.aspectHint === 'wide' ? 540 : 540;
 ---
 
-<article class="grid grid-cols-1 items-start gap-6 rounded-xl border border-border bg-surface p-5 sm:p-7 lg:grid-cols-12 lg:gap-8">
-	<div class="lg:col-span-5">
-		<div class:list={['w-full overflow-hidden rounded-lg border border-border bg-surface-subtle', aspectClass]}>
-			<Image
-				src={internship.graphic}
-				alt={internship.graphicAlt}
-				width={960}
-				height={540}
-				class="h-full w-full object-cover"
-			/>
+<article class="rounded-2xl border border-border bg-surface p-5 sm:p-7 lg:p-8">
+	<div class="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-border pb-4 font-mono text-xs">
+		<div class="flex items-center gap-3">
+			<span class="inline-flex items-center gap-1.5 font-semibold text-accent">
+				<span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-[1px] bg-accent" />
+				{timelineNumber}
+			</span>
+			<span class="text-border" aria-hidden="true">/</span>
+			<span class="text-muted-foreground">{internship.domain}</span>
 		</div>
+		<span class="text-muted-foreground">
+			{internship.period} · {internship.location}
+		</span>
 	</div>
 
-	<div class="space-y-4 lg:col-span-7">
-		<div class="flex flex-wrap items-baseline justify-between gap-2">
-			<div>
-				<h2 class="text-2xl font-bold tracking-tight text-foreground">{internship.company}</h2>
-				<p class="text-base font-medium text-accent">{internship.role}</p>
+	<div class="grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8">
+		<div
+			class:list={[
+				'md:col-span-5',
+				isReversed ? 'md:order-last' : 'md:order-first',
+			]}
+		>
+			<div
+				class:list={[
+					'w-full overflow-hidden rounded-xl border border-border bg-surface-subtle',
+					aspectClass,
+				]}
+			>
+				<Image
+					src={internship.graphic}
+					alt={internship.graphicAlt}
+					width={imgWidth}
+					height={imgHeight}
+					class="h-full w-full object-cover"
+				/>
 			</div>
-			<p class="font-mono text-xs text-muted-foreground">
-				{internship.period} · {internship.location}
-			</p>
 		</div>
 
-		<ul class="flex flex-wrap gap-2">
-			{internship.highlights.map((tag) => (
-				<li class="rounded-md border border-border bg-surface-subtle px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-					{tag}
-				</li>
-			))}
-		</ul>
+		<div class="space-y-4 md:col-span-7">
+			<div>
+				<h2 class="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+					{internship.company}
+				</h2>
+				<p class="mt-1 text-base font-medium text-accent">{internship.role}</p>
+			</div>
 
-		<div class="space-y-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
-			{internship.paragraphs.map((paragraph) => (
-				<p>{paragraph}</p>
-			))}
+			<ul class="flex flex-wrap gap-2" aria-label={`${internship.company} key highlights`}>
+				{internship.highlights.map((tag) => (
+					<li class="rounded-md border border-border bg-surface-subtle px-2.5 py-1 font-mono text-xs text-foreground/90">
+						{tag}
+					</li>
+				))}
+			</ul>
+
+			<div class="space-y-3.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
+				{internship.paragraphs.map((paragraph) => (
+					<p>{paragraph}</p>
+				))}
+			</div>
 		</div>
 	</div>
 </article>
