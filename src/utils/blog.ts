@@ -17,6 +17,6 @@ export function estimateReadingTime(body: string | undefined): number {
 }
 
 export async function getSortedBlogPosts(): Promise<BlogEntry[]> {
-	const posts = await getCollection('blog');
+	const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
 	return posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }

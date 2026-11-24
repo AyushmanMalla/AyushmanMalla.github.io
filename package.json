@@ -9,6 +9,8 @@
     "check": "astro check",
     "test": "playwright test",
     "verify": "npm run check && npm run build && npm run test",
+    "new-post": "node scripts/new-post.mjs",
+    "prep-video": "node scripts/prep-video.mjs",
     "astro": "astro"
   },
   "dependencies": {
