@@ -23,7 +23,6 @@ const {
 
 const safeVideo = video && isSafeLocalVideoPath(video) ? video : undefined;
 const posterUrl = image?.src;
-const videoType = safeVideo?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 ---
 
 {(safeVideo || image) && (
@@ -44,17 +43,18 @@ const videoType = safeVideo?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 					loop
 					muted
 					playsinline
+					webkit-playsinline
+					disablepictureinpicture
 					preload={priority ? 'auto' : 'metadata'}
 					aria-label={alt || 'Kinetic typography visual'}
 					class="h-full w-full object-cover"
-				>
-					<source src={safeVideo} type={videoType} />
-				</video>
+				/>
 				<button
 					type="button"
 					data-media-toggle
 					aria-label="Pause animation"
-					class="absolute right-3 bottom-3 z-20 inline-flex min-h-[32px] cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background/85 px-2.5 py-1 font-mono text-xs text-foreground backdrop-blur-sm transition-colors hover:border-accent hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+					aria-pressed="true"
+					class="absolute right-3 bottom-3 z-20 inline-flex min-h-[40px] touch-manipulation cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background/85 px-3 py-1.5 font-mono text-xs text-foreground backdrop-blur-sm transition-colors select-none hover:border-accent hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:min-h-[34px] sm:px-2.5 sm:py-1"
 				>
 					<span data-media-icon aria-hidden="true" class="text-accent">❚❚</span>
 					<span data-media-label>Pause</span>
@@ -79,6 +79,7 @@ const videoType = safeVideo?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 <script>
 	function initKineticMedia() {
 		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 		document.querySelectorAll<HTMLElement>('[data-kinetic-media]').forEach((container) => {
 			if (container.dataset.bound === 'true') return;
 			container.dataset.bound = 'true';
@@ -90,28 +91,93 @@ const videoType = safeVideo?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 			const icon = button.querySelector<HTMLElement>('[data-media-icon]');
 			const label = button.querySelector<HTMLElement>('[data-media-label]');
 
-			const syncUi = (paused: boolean) => {
-				button.setAttribute('aria-label', paused ? 'Play animation' : 'Pause animation');
-				if (icon) icon.textContent = paused ? '▶' : '❚❚';
-				if (label) label.textContent = paused ? 'Play' : 'Pause';
+			// Enforce mobile inline-muted flags before any play attempt
+			video.defaultMuted = true;
+			video.muted = true;
+			video.playsInline = true;
+			video.setAttribute('playsinline', '');
+			video.setAttribute('webkit-playsinline', '');
+
+			let userPaused = false;
+			let inView = true;
+
+			const syncUi = () => {
+				const isPaused = video.paused || video.ended;
+				button.setAttribute('aria-label', isPaused ? 'Play animation' : 'Pause animation');
+				button.setAttribute('aria-pressed', String(!isPaused));
+				container.dataset.playing = String(!isPaused);
+				if (icon) icon.textContent = isPaused ? '▶' : '❚❚';
+				if (label) label.textContent = isPaused ? 'Play' : 'Pause';
 			};
+
+			const attemptPlay = async () => {
+				if (prefersReduced || userPaused || !inView) {
+					syncUi();
+					return;
+				}
+				video.muted = true;
+				try {
+					if (video.paused || video.ended) {
+						await video.play();
+					}
+				} catch {
+					// Browser blocked autoplay (e.g., iOS Low Power Mode); UI stays accurately in Play state
+				}
+				syncUi();
+			};
+
+			for (const eventName of ['play', 'playing', 'pause', 'ended'] as const) {
+				video.addEventListener(eventName, syncUi);
+			}
 
 			if (prefersReduced) {
 				video.pause();
-				syncUi(true);
+				syncUi();
 			} else {
-				syncUi(false);
+				syncUi();
+				void attemptPlay();
 			}
 
-			button.addEventListener('click', (event) => {
+			button.addEventListener('click', async (event) => {
 				event.preventDefault();
 				event.stopPropagation();
-				if (video.paused) {
-					video.play().catch(() => {});
-					syncUi(false);
+				if (video.paused || video.ended) {
+					userPaused = false;
+					video.muted = true;
+					try {
+						await video.play();
+					} catch {
+						// Playback failed or blocked; syncUi keeps button accurate
+					}
 				} else {
+					userPaused = true;
 					video.pause();
-					syncUi(true);
+				}
+				syncUi();
+			});
+
+			if ('IntersectionObserver' in window) {
+				const observer = new IntersectionObserver(
+					(entries) => {
+						for (const entry of entries) {
+							inView = entry.isIntersecting && entry.intersectionRatio >= 0.2;
+							if (!inView) {
+								if (!video.paused) {
+									video.pause();
+								}
+							} else if (!prefersReduced && !userPaused && document.visibilityState === 'visible') {
+								void attemptPlay();
+							}
+						}
+					},
+					{ threshold: [0, 0.2] },
+				);
+				observer.observe(container);
+			}
+
+			document.addEventListener('visibilitychange', () => {
+				if (document.visibilityState === 'visible' && inView && !prefersReduced && !userPaused) {
+					void attemptPlay();
 				}
 			});
 		});

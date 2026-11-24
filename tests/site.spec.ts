@@ -278,17 +278,87 @@ test.describe('Responsive Layout, Resizing, Container & Aspect Ratio Guards', ()
 		}
 	});
 
-	test('interactive media pause/play control works when kinetic video is present', async ({
-		page,
+	test('interactive media pause/play control stays synced with video state on desktop & mobile', async ({
+		browser,
 	}) => {
-		await page.setViewportSize({ width: 1280, height: 800 });
-		await page.goto('/about/', { waitUntil: 'networkidle' });
-		const toggleBtn = page.locator('[data-media-toggle]').first();
-		await expect(toggleBtn).toBeVisible();
-		const initialLabel = await toggleBtn.getAttribute('aria-label');
-		await toggleBtn.click();
-		const nextLabel = await toggleBtn.getAttribute('aria-label');
-		expect(nextLabel).not.toBe(initialLabel);
+		for (const route of ['/about/', '/blog/']) {
+			const context = await browser.newContext({
+				viewport: { width: 375, height: 812 },
+				hasTouch: true,
+			});
+			const page = await context.newPage();
+			await page.goto(route, { waitUntil: 'networkidle' });
+
+			const container = page.locator('[data-kinetic-media]').first();
+			const video = container.locator('video');
+			const toggleBtn = container.locator('[data-media-toggle]');
+			await expect(toggleBtn).toBeVisible();
+
+			// Wait briefly for initial autoplay attempt to settle
+			await page.waitForTimeout(300);
+			const state1 = await page.evaluate(() => {
+				const v = document.querySelector('[data-kinetic-media] video') as HTMLVideoElement;
+				const b = document.querySelector('[data-kinetic-media] [data-media-toggle]') as HTMLButtonElement;
+				return { paused: v.paused, pressed: b.getAttribute('aria-pressed'), label: b.getAttribute('aria-label') };
+			});
+			expect(state1.pressed).toBe(String(!state1.paused));
+			expect(state1.label).toBe(state1.paused ? 'Play animation' : 'Pause animation');
+
+			await toggleBtn.click();
+			await page.waitForTimeout(200);
+			const state2 = await page.evaluate(() => {
+				const v = document.querySelector('[data-kinetic-media] video') as HTMLVideoElement;
+				const b = document.querySelector('[data-kinetic-media] [data-media-toggle]') as HTMLButtonElement;
+				return { paused: v.paused, pressed: b.getAttribute('aria-pressed'), label: b.getAttribute('aria-label') };
+			});
+			expect(state2.paused).toBe(!state1.paused);
+			expect(state2.pressed).toBe(String(!state2.paused));
+			expect(state2.label).toBe(state2.paused ? 'Play animation' : 'Pause animation');
+
+			await toggleBtn.click();
+			await page.waitForTimeout(200);
+			const state3 = await page.evaluate(() => {
+				const v = document.querySelector('[data-kinetic-media] video') as HTMLVideoElement;
+				const b = document.querySelector('[data-kinetic-media] [data-media-toggle]') as HTMLButtonElement;
+				return { paused: v.paused, pressed: b.getAttribute('aria-pressed'), label: b.getAttribute('aria-label') };
+			});
+			expect(state3.paused).toBe(state1.paused);
+			expect(state3.pressed).toBe(String(!state3.paused));
+			expect(await video.getAttribute('src')).toMatch(/\.mp4$/);
+
+			await context.close();
+		}
+	});
+
+	test('touch viewport autoplays card preview videos when scrolled into view', async ({
+		browser,
+	}) => {
+		const context = await browser.newContext({
+			viewport: { width: 375, height: 812 },
+			hasTouch: true,
+		});
+		const page = await context.newPage();
+		await page.goto('/', { waitUntil: 'networkidle' });
+
+		const previewVideo = page.locator('[data-preview-video]').first();
+		await previewVideo.scrollIntoViewIfNeeded();
+		await page.waitForTimeout(400);
+
+		const state = await previewVideo.evaluate((el) => {
+			const v = el as HTMLVideoElement;
+			return {
+				src: v.getAttribute('src'),
+				muted: v.muted,
+				playsInline: v.playsInline,
+				paused: v.paused,
+			};
+		});
+		expect(state.src).toMatch(/\.mp4$/);
+		expect(state.muted).toBe(true);
+		expect(state.playsInline).toBe(true);
+		expect(state.paused).toBe(false);
+
+		await context.close();
 	});
 
 	test('copy-email button on homepage updates feedback state on click', async ({ page }) => {

@@ -3,7 +3,7 @@ title: 'Cache Locality vs. Asymptotic Analysis'
 description: 'Why two O(n²) matrix traversal algorithms perform dramatically differently on real CPU memory hierarchies.'
 pubDate: 'Nov 18 2025'
 heroImage: '../../assets/wave-poster.webp'
-heroVideo: '/media/wave.webm'
+heroVideo: '/media/wave.mp4'
 heroAlt: 'Kinetic wave typography visual for Cache Locality'
 tags: ['Memory Hierarchy', 'Cache Locality', 'C++']
 ---

@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import ContoursRed from '../assets/Contours Red.png';
 import FormattedDate from '../components/FormattedDate.astro';
+import PreviewVideo from '../components/PreviewVideo.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '../consts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { estimateReadingTime, getPostSlug, getSortedBlogPosts } from '../utils/blog';
@@ -197,22 +198,7 @@ const EXPERIENCE_LEDGER = [
 						{(post.data.heroVideo || post.data.heroImage) && (
 							<div class="aspect-[2/1] w-full shrink-0 overflow-hidden rounded-lg border border-border/70 bg-surface-subtle transition-colors group-hover:border-accent/45 sm:w-56">
 								{post.data.heroVideo ? (
-									<video
-										src={post.data.heroVideo}
-										poster={post.data.heroImage?.src}
-										muted
-										playsinline
-										loop
-										preload="metadata"
-										aria-hidden="true"
-										data-hover-video
-										class="h-full w-full object-cover"
-									>
-										<source
-											src={post.data.heroVideo}
-											type={post.data.heroVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'}
-										/>
-									</video>
+									<PreviewVideo video={post.data.heroVideo} poster={post.data.heroImage?.src} />
 								) : (
 									post.data.heroImage && (
 										<Image
@@ -315,34 +301,6 @@ const EXPERIENCE_LEDGER = [
 		});
 	}
 
-	function initHoverVideos() {
-		const allowMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-		if (!allowMotion) return;
-
-		document.querySelectorAll<HTMLElement>('[data-hover-video-trigger]').forEach((trigger) => {
-			if (trigger.dataset.hoverBound === 'true') return;
-			trigger.dataset.hoverBound = 'true';
-
-			const video = trigger.querySelector<HTMLVideoElement>('[data-hover-video]');
-			if (!video) return;
-
-			const playVideo = () => {
-				video.play().catch(() => {});
-			};
-			const pauseVideo = () => {
-				video.pause();
-			};
-
-			trigger.addEventListener('pointerenter', (event) => {
-				if (event.pointerType === 'touch') return;
-				playVideo();
-			});
-			trigger.addEventListener('pointerleave', pauseVideo);
-			trigger.addEventListener('focusin', playVideo);
-			trigger.addEventListener('focusout', pauseVideo);
-		});
-	}
-
 	async function copyTextSafe(text: string) {
 		try {
 			if (navigator.clipboard && window.isSecureContext) {
@@ -388,7 +346,6 @@ const EXPERIENCE_LEDGER = [
 
 	function initHome() {
 		initHeroReveal();
-		initHoverVideos();
 		initCopyEmail();
 	}
 

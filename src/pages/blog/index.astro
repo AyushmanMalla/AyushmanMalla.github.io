@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import FormattedDate from '../../components/FormattedDate.astro';
 import HeroMedia from '../../components/HeroMedia.astro';
+import PreviewVideo from '../../components/PreviewVideo.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { estimateReadingTime, getPostSlug, getSortedBlogPosts } from '../../utils/blog';
 
@@ -104,22 +105,7 @@ const [featuredPost, ...otherPosts] = posts;
 							{(post.data.heroVideo || post.data.heroImage) && (
 								<div class="aspect-[2/1] w-full shrink-0 overflow-hidden rounded-lg border border-border/70 bg-surface-subtle transition-colors group-hover:border-accent/45 sm:w-56">
 									{post.data.heroVideo ? (
-										<video
-											src={post.data.heroVideo}
-											poster={post.data.heroImage?.src}
-											muted
-											playsinline
-											loop
-											preload="metadata"
-											aria-hidden="true"
-											data-hover-video
-											class="h-full w-full object-cover"
-										>
-											<source
-												src={post.data.heroVideo}
-												type={post.data.heroVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'}
-											/>
-										</video>
+										<PreviewVideo video={post.data.heroVideo} poster={post.data.heroImage?.src} />
 									) : (
 										post.data.heroImage && (
 											<Image
@@ -142,36 +128,3 @@ const [featuredPost, ...otherPosts] = posts;
 		)}
 	</section>
 </BaseLayout>
-
-<script>
-	function initBlogHoverVideos() {
-		const allowMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-		if (!allowMotion) return;
-
-		document.querySelectorAll<HTMLElement>('[data-hover-video-trigger]').forEach((trigger) => {
-			if (trigger.dataset.hoverBound === 'true') return;
-			trigger.dataset.hoverBound = 'true';
-
-			const video = trigger.querySelector<HTMLVideoElement>('[data-hover-video]');
-			if (!video) return;
-
-			const playVideo = () => {
-				video.play().catch(() => {});
-			};
-			const pauseVideo = () => {
-				video.pause();
-			};
-
-			trigger.addEventListener('pointerenter', (event) => {
-				if (event.pointerType === 'touch') return;
-				playVideo();
-			});
-			trigger.addEventListener('pointerleave', pauseVideo);
-			trigger.addEventListener('focusin', playVideo);
-			trigger.addEventListener('focusout', pauseVideo);
-		});
-	}
-
-	initBlogHoverVideos();
-	document.addEventListener('astro:after-swap', initBlogHoverVideos);
-</script>

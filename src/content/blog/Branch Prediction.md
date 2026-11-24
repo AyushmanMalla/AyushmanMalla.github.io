@@ -3,7 +3,7 @@ title: "Branch Prediction: From CPU Hardware to Code Behavior"
 pubDate: '10 October 2025'
 description: "Understanding how modern CPUs predict branches, and how to study branch prediction behavior using Python and C++."
 heroImage: '../../assets/xwave-poster.webp'
-heroVideo: '/media/xwave.webm'
+heroVideo: '/media/xwave.mp4'
 heroAlt: 'Kinetic wave typography visual for Branch Prediction'
 tags: ['CPU Architecture', 'C++', 'Performance']
 ---

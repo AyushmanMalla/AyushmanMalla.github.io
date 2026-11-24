@@ -1,0 +1,123 @@
+---
+import { isSafeLocalVideoPath } from '../utils/security';
+
+interface Props {
+	video: string;
+	poster?: string;
+	class?: string;
+}
+
+const { video, poster, class: className = 'h-full w-full object-cover' } = Astro.props;
+const safeVideo = isSafeLocalVideoPath(video) ? video : undefined;
+---
+
+{safeVideo && (
+	<video
+		src={safeVideo}
+		poster={poster}
+		muted
+		playsinline
+		webkit-playsinline
+		disablepictureinpicture
+		loop
+		preload="metadata"
+		aria-hidden="true"
+		data-hover-video
+		data-preview-video
+		class={className}
+	/>
+)}
+
+<script>
+	function initPreviewVideos() {
+		const allowMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+		if (!allowMotion) return;
+
+		const supportsHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+		const visibleTriggers = new Set<HTMLElement>();
+
+		const playVideo = (video: HTMLVideoElement) => {
+			video.defaultMuted = true;
+			video.muted = true;
+			video.playsInline = true;
+			if (video.paused) {
+				video.play().catch(() => {});
+			}
+		};
+
+		const pauseVideo = (video: HTMLVideoElement) => {
+			if (!video.paused) {
+				video.pause();
+			}
+		};
+
+		let observer: IntersectionObserver | undefined;
+		if (!supportsHover && 'IntersectionObserver' in window) {
+			observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						const trigger = entry.target as HTMLElement;
+						const video = trigger.querySelector<HTMLVideoElement>('[data-preview-video]');
+						if (!video) continue;
+
+						if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+							visibleTriggers.add(trigger);
+							if (document.visibilityState === 'visible') {
+								playVideo(video);
+							}
+						} else {
+							visibleTriggers.delete(trigger);
+							pauseVideo(video);
+						}
+					}
+				},
+				{ threshold: [0, 0.35] },
+			);
+		}
+
+		document.querySelectorAll<HTMLElement>('[data-hover-video-trigger]').forEach((trigger) => {
+			if (trigger.dataset.hoverBound === 'true') return;
+			const video = trigger.querySelector<HTMLVideoElement>('[data-preview-video]');
+			if (!video) return;
+
+			trigger.dataset.hoverBound = 'true';
+			video.defaultMuted = true;
+			video.muted = true;
+			video.playsInline = true;
+			video.setAttribute('playsinline', '');
+			video.setAttribute('webkit-playsinline', '');
+
+			if (supportsHover) {
+				trigger.addEventListener('pointerenter', (event) => {
+					if (event.pointerType === 'touch') return;
+					playVideo(video);
+				});
+				trigger.addEventListener('pointerleave', () => pauseVideo(video));
+				trigger.addEventListener('focusin', () => playVideo(video));
+				trigger.addEventListener('focusout', () => pauseVideo(video));
+			} else if (observer) {
+				observer.observe(trigger);
+			} else {
+				playVideo(video);
+			}
+		});
+
+		if (!supportsHover && !document.documentElement.dataset.previewVisibilityBound) {
+			document.documentElement.dataset.previewVisibilityBound = 'true';
+			document.addEventListener('visibilitychange', () => {
+				for (const trigger of visibleTriggers) {
+					const video = trigger.querySelector<HTMLVideoElement>('[data-preview-video]');
+					if (!video) continue;
+					if (document.visibilityState === 'visible') {
+						playVideo(video);
+					} else {
+						pauseVideo(video);
+					}
+				}
+			});
+		}
+	}
+
+	initPreviewVideos();
+	document.addEventListener('astro:after-swap', initPreviewVideos);
+</script>
