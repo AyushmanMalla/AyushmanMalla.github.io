@@ -4,6 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import HeroMedia from '../components/HeroMedia.astro';
 import { SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '../consts';
+import { serializeJsonLd } from '../utils/security';
 import BaseLayout from './BaseLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
@@ -57,7 +58,7 @@ const blogPostingJsonLd = {
 	modifiedTime={updatedDate}
 	mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6"
 >
-	<script slot="head" type="application/ld+json" set:html={JSON.stringify(blogPostingJsonLd)} />
+	<script slot="head" type="application/ld+json" set:html={serializeJsonLd(blogPostingJsonLd)} />
 	<div class="reading-progress" aria-hidden="true"></div>
 
 	<article class="py-10 sm:py-14">

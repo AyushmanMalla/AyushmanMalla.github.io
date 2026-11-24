@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { isSafeLocalVideoPath } from '../utils/security';
 
 interface Props {
 	image?: ImageMetadata;
@@ -20,11 +21,12 @@ const {
 	priority = false,
 } = Astro.props;
 
+const safeVideo = video && isSafeLocalVideoPath(video) ? video : undefined;
 const posterUrl = image?.src;
-const videoType = video?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
+const videoType = safeVideo?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 ---
 
-{(video || image) && (
+{(safeVideo || image) && (
 	<div
 		class:list={[
 			'relative w-full overflow-hidden bg-surface-subtle',
@@ -33,10 +35,10 @@ const videoType = video?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 		]}
 		data-kinetic-media
 	>
-		{video ? (
+		{safeVideo ? (
 			<>
 				<video
-					src={video}
+					src={safeVideo}
 					poster={posterUrl}
 					autoplay
 					loop
@@ -46,7 +48,7 @@ const videoType = video?.endsWith('.webm') ? 'video/webm' : 'video/mp4';
 					aria-label={alt || 'Kinetic typography visual'}
 					class="h-full w-full object-cover"
 				>
-					<source src={video} type={videoType} />
+					<source src={safeVideo} type={videoType} />
 				</video>
 				<button
 					type="button"

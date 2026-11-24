@@ -405,3 +405,50 @@ test.describe('SEO, Google Search Console & Indexing Integrity', () => {
 		}
 	});
 });
+
+test.describe('Security & Hardening Guards', () => {
+	test('security helpers neutralize script breakout and unsafe video URLs', async () => {
+		const { serializeJsonLd, isSafeLocalVideoPath } = await import('../src/utils/security.ts');
+
+		const escaped = serializeJsonLd({
+			title: '</script><script>alert("xss")</script>&test',
+		});
+		expect(escaped).not.toContain('</script>');
+		expect(escaped).not.toContain('<');
+		expect(escaped).not.toContain('>');
+		expect(JSON.parse(escaped)).toEqual({
+			title: '</script><script>alert("xss")</script>&test',
+		});
+
+		expect(isSafeLocalVideoPath('/media/wave.webm')).toBe(true);
+		expect(isSafeLocalVideoPath('/media/about.mp4')).toBe(true);
+		expect(isSafeLocalVideoPath('javascript:alert(1)')).toBe(false);
+		expect(isSafeLocalVideoPath('//evil.example/a.mp4')).toBe(false);
+		expect(isSafeLocalVideoPath('https://evil.example/a.mp4')).toBe(false);
+		expect(isSafeLocalVideoPath('/media/../etc/passwd.mp4')).toBe(false);
+		expect(isSafeLocalVideoPath('/media/file.svg')).toBe(false);
+	});
+
+	test('all routes set Referrer-Policy and protect target="_blank" links with noopener noreferrer', async ({
+		page,
+	}) => {
+		for (const route of ROUTES) {
+			await page.goto(route, { waitUntil: 'networkidle' });
+
+			const referrer = await page.locator('meta[name="referrer"]').getAttribute('content');
+			expect(referrer, `Referrer policy on ${route}`).toBe('strict-origin-when-cross-origin');
+
+			const unsafeBlankLinks = await page.evaluate(() => {
+				const issues: string[] = [];
+				for (const link of document.querySelectorAll('a[target="_blank"]')) {
+					const relTokens = (link.getAttribute('rel') ?? '').toLowerCase().split(/\s+/);
+					if (!relTokens.includes('noopener') || !relTokens.includes('noreferrer')) {
+						issues.push(link.getAttribute('href') ?? link.textContent?.trim() ?? 'unknown');
+					}
+				}
+				return issues;
+			});
+			expect(unsafeBlankLinks, `Safe target="_blank" rel attributes on ${route}`).toEqual([]);
+		}
+	});
+});

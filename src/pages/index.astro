@@ -5,6 +5,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '../consts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { estimateReadingTime, getPostSlug, getSortedBlogPosts } from '../utils/blog';
+import { serializeJsonLd } from '../utils/security';
 
 const posts = (await getSortedBlogPosts()).slice(0, 3);
 
@@ -34,7 +35,7 @@ const EXPERIENCE_LEDGER = [
 	<script
 		slot="head"
 		type="application/ld+json"
-		set:html={JSON.stringify({
+		set:html={serializeJsonLd({
 			'@context': 'https://schema.org',
 			'@type': 'Person',
 			name: SITE_TITLE,
