@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import FormattedDate from '../../components/FormattedDate.astro';
 import HeroMedia from '../../components/HeroMedia.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -12,118 +13,165 @@ const [featuredPost, ...otherPosts] = posts;
 	title="Blog"
 	description="Technical deep dives on CPU architecture, branch prediction, cache locality, FPGAs, and systems performance."
 >
-	<section class="py-10 sm:py-14">
+	<section class="py-12 sm:py-16">
 		<div class="max-w-2xl">
-			<p class="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-accent uppercase">
-				<span aria-hidden="true" class="inline-block h-2 w-2 rounded-[2px] bg-accent" />
-				<span>Notes &amp; Deep Dives</span>
-			</p>
-			<h1 class="heading-page mt-3 font-bold text-foreground">Writing</h1>
+			<h1 class="heading-page font-bold text-foreground">
+				Writing<span class="text-accent">.</span>
+			</h1>
 			<p class="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
 				Technical breakdowns on hardware behavior, CPU microarchitecture, and performance engineering.
 			</p>
 		</div>
 
-		<div class="mt-8 flex items-center gap-3" aria-hidden="true">
-			<span class="h-[2px] w-12 bg-accent" />
-			<span class="h-px flex-1 bg-border" />
-		</div>
+		{featuredPost && (
+			<article class="group relative mt-10 border-t border-border pt-10">
+				<div class="grid grid-cols-1 items-center gap-7 lg:grid-cols-12 lg:gap-10">
+					<div class="lg:col-span-7">
+						<HeroMedia
+							image={featuredPost.data.heroImage}
+							video={featuredPost.data.heroVideo}
+							alt={featuredPost.data.heroAlt ?? featuredPost.data.title}
+							aspectClass="aspect-[2/1]"
+							class="rounded-xl border border-border/80"
+							priority={true}
+						/>
+					</div>
 
-		<div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
-			{featuredPost && (
-				<article class="card-lift group relative overflow-hidden rounded-2xl border border-border bg-surface lg:col-span-2">
-					<div class="grid grid-cols-1 lg:grid-cols-12">
-						<div class="lg:col-span-7">
-							<HeroMedia
-								image={featuredPost.data.heroImage}
-								video={featuredPost.data.heroVideo}
-								alt={featuredPost.data.heroAlt ?? featuredPost.data.title}
-								aspectClass="aspect-[2/1]"
-								class="h-full border-b border-border lg:border-r lg:border-b-0"
-								priority={true}
-							/>
-						</div>
+					<div class="flex flex-col gap-3.5 lg:col-span-5">
+						<p class="font-mono text-xs text-muted-foreground">
+							<span class="text-accent">Latest</span> · <FormattedDate date={featuredPost.data.pubDate} /> · {estimateReadingTime(featuredPost.body)} min read
+						</p>
 
-						<div class="flex flex-col justify-between gap-4 p-6 sm:p-8 lg:col-span-5">
-							<div class="space-y-3">
-								<div class="flex flex-wrap items-center gap-2.5 font-mono text-xs">
-									<span class="rounded bg-accent-soft px-2 py-0.5 font-semibold text-accent">
-										LATEST
-									</span>
-									<span class="text-muted-foreground">
-										<FormattedDate date={featuredPost.data.pubDate} /> · {estimateReadingTime(featuredPost.body)} min read
-									</span>
-								</div>
+						<h2 class="text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-accent-hover sm:text-3xl">
+							<a
+								href={`/blog/${getPostSlug(featuredPost)}/`}
+								class="focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+							>
+								{featuredPost.data.title}
+							</a>
+						</h2>
 
-								<h2 class="text-2xl font-bold tracking-tight text-foreground transition-colors group-hover:text-accent-hover sm:text-3xl">
-									<a
-										href={`/blog/${getPostSlug(featuredPost)}/`}
-										class="after:absolute after:inset-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-									>
-										{featuredPost.data.title}
-									</a>
-								</h2>
+						<p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
+							{featuredPost.data.description}
+						</p>
 
-								<p class="text-sm leading-relaxed text-muted-foreground sm:text-base">
-									{featuredPost.data.description}
-								</p>
-							</div>
+						{featuredPost.data.tags.length > 0 && (
+							<p class="font-mono text-xs text-muted-foreground/85">
+								{featuredPost.data.tags.join(' · ')}
+							</p>
+						)}
 
-							<div class="space-y-4 pt-2">
-								{featuredPost.data.tags.length > 0 && (
-									<ul class="flex flex-wrap gap-2" aria-label="Post topics">
-										{featuredPost.data.tags.map((tag) => (
-											<li class="rounded border border-border bg-surface-subtle px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
-												{tag}
-											</li>
-										))}
-									</ul>
-								)}
-								<p class="inline-flex items-center gap-1.5 font-mono text-xs font-medium text-accent transition-colors group-hover:text-accent-hover">
-									<span>Read article</span>
-									<span aria-hidden="true">→</span>
-								</p>
-							</div>
+						<div class="pt-1">
+							<a
+								href={`/blog/${getPostSlug(featuredPost)}/`}
+								class="link-sweep min-h-[40px] py-2 font-mono text-xs text-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+							>
+								<span>Read article</span>
+								<span aria-hidden="true" class="text-accent">→</span>
+							</a>
 						</div>
 					</div>
-				</article>
-			)}
+				</div>
+			</article>
+		)}
 
-			{otherPosts.map((post) => (
-				<article class="card-lift group overflow-hidden rounded-2xl border border-border bg-surface">
-					<a
-						href={`/blog/${getPostSlug(post)}/`}
-						class="flex h-full flex-col focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent"
-					>
-						<HeroMedia
-							image={post.data.heroImage}
-							alt={post.data.heroAlt ?? post.data.title}
-							aspectClass="aspect-[2/1]"
-							class="border-b border-border"
-						/>
-						<div class="flex flex-1 flex-col gap-2.5 p-6">
-							<p class="font-mono text-xs text-muted-foreground">
-								<FormattedDate date={post.data.pubDate} /> · {estimateReadingTime(post.body)} min read
-							</p>
-							<h2 class="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-accent-hover sm:text-2xl">
-								{post.data.title}
-							</h2>
-							<p class="text-sm leading-relaxed text-muted-foreground">
-								{post.data.description}
-							</p>
-							{post.data.tags.length > 0 && (
-								<div class="mt-auto flex flex-wrap gap-1.5 pt-3">
-									{post.data.tags.map((tag) => (
-										<span class="rounded border border-border bg-surface-subtle px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
-											{tag}
-										</span>
-									))}
+		{otherPosts.length > 0 && (
+			<ul class="mt-12 border-b border-border">
+				{otherPosts.map((post) => (
+					<li class="border-t border-border">
+						<a
+							href={`/blog/${getPostSlug(post)}/`}
+							data-hover-video-trigger
+							class="group flex flex-col gap-5 py-7 transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-accent sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:py-8"
+						>
+							<div class="min-w-0 flex-1 space-y-2">
+								<p class="font-mono text-xs text-muted-foreground">
+									<FormattedDate date={post.data.pubDate} /> · {estimateReadingTime(post.body)} min read
+								</p>
+								<h2 class="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-accent-hover sm:text-2xl">
+									{post.data.title}
+								</h2>
+								<p class="text-sm leading-relaxed text-muted-foreground">
+									{post.data.description}
+								</p>
+								{post.data.tags.length > 0 && (
+									<p class="pt-1 font-mono text-xs text-muted-foreground/80">
+										{post.data.tags.join(' · ')}
+									</p>
+								)}
+							</div>
+
+							{(post.data.heroVideo || post.data.heroImage) && (
+								<div class="aspect-[2/1] w-full shrink-0 overflow-hidden rounded-lg border border-border/70 bg-surface-subtle transition-colors group-hover:border-accent/45 sm:w-56">
+									{post.data.heroVideo ? (
+										<video
+											src={post.data.heroVideo}
+											poster={post.data.heroImage?.src}
+											muted
+											playsinline
+											loop
+											preload="metadata"
+											aria-hidden="true"
+											data-hover-video
+											class="h-full w-full object-cover"
+										>
+											<source
+												src={post.data.heroVideo}
+												type={post.data.heroVideo.endsWith('.webm') ? 'video/webm' : 'video/mp4'}
+											/>
+										</video>
+									) : (
+										post.data.heroImage && (
+											<Image
+												src={post.data.heroImage}
+												alt={post.data.heroAlt ?? post.data.title}
+												width={640}
+												height={320}
+												loading="lazy"
+												decoding="async"
+												class="h-full w-full object-cover"
+											/>
+										)
+									)}
 								</div>
 							)}
-						</div>
-					</a>
-				</article>
-			))}
-		</div>
+						</a>
+					</li>
+				))}
+			</ul>
+		)}
 	</section>
 </BaseLayout>
+
+<script>
+	function initBlogHoverVideos() {
+		const allowMotion = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+		if (!allowMotion) return;
+
+		document.querySelectorAll<HTMLElement>('[data-hover-video-trigger]').forEach((trigger) => {
+			if (trigger.dataset.hoverBound === 'true') return;
+			trigger.dataset.hoverBound = 'true';
+
+			const video = trigger.querySelector<HTMLVideoElement>('[data-hover-video]');
+			if (!video) return;
+
+			const playVideo = () => {
+				video.play().catch(() => {});
+			};
+			const pauseVideo = () => {
+				video.pause();
+			};
+
+			trigger.addEventListener('pointerenter', (event) => {
+				if (event.pointerType === 'touch') return;
+				playVideo();
+			});
+			trigger.addEventListener('pointerleave', pauseVideo);
+			trigger.addEventListener('focusin', playVideo);
+			trigger.addEventListener('focusout', pauseVideo);
+		});
+	}
+
+	initBlogHoverVideos();
+	document.addEventListener('astro:after-swap', initBlogHoverVideos);
+</script>

@@ -6,7 +6,7 @@ const isActive = (href: string) =>
 	href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
 
-<header class="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
+<header class="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
 	<nav
 		aria-label="Primary navigation"
 		class="mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6"
@@ -18,12 +18,12 @@ const isActive = (href: string) =>
 		>
 			<span
 				aria-hidden="true"
-				class="inline-block h-2.5 w-2.5 shrink-0 rounded-[2px] bg-accent ring-2 ring-accent/25 transition-colors group-hover:bg-accent-hover"
+				class="inline-block h-2 w-2 shrink-0 rounded-[1px] bg-accent transition-colors group-hover:bg-accent-hover"
 			/>
 			<span>{SITE_TITLE}</span>
 		</a>
 
-		<ul class="flex items-center gap-1 sm:gap-2">
+		<ul class="flex items-center gap-1 sm:gap-3">
 			{NAV_LINKS.map((item) => {
 				const active = isActive(item.href);
 				return (
@@ -32,9 +32,9 @@ const isActive = (href: string) =>
 							href={item.href}
 							aria-current={active ? 'page' : undefined}
 							class:list={[
-								'relative inline-flex min-h-[48px] items-center px-2 py-2.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:px-3.5 sm:text-sm',
+								'relative inline-flex min-h-[48px] items-center px-2 py-2.5 text-xs font-medium whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:px-3 sm:text-sm',
 								active
-									? 'text-foreground after:absolute after:inset-x-2 after:bottom-0 after:h-[2px] after:bg-accent sm:after:inset-x-3.5'
+									? 'text-foreground after:absolute after:inset-x-2 after:bottom-0 after:h-px after:bg-accent sm:after:inset-x-3'
 									: 'text-muted-foreground hover:text-foreground',
 							]}
 						>

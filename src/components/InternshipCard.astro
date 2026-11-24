@@ -15,22 +15,19 @@ const imgWidth = internship.aspectHint === 'wide' ? 1260 : 960;
 const imgHeight = internship.aspectHint === 'wide' ? 540 : 540;
 ---
 
-<article class="rounded-2xl border border-border bg-surface p-5 sm:p-7 lg:p-8">
-	<div class="mb-5 flex flex-wrap items-center justify-between gap-2 border-b border-border pb-4 font-mono text-xs">
-		<div class="flex items-center gap-3">
-			<span class="inline-flex items-center gap-1.5 font-semibold text-accent">
-				<span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-[1px] bg-accent" />
-				{timelineNumber}
-			</span>
+<article id={internship.id} class="scroll-mt-24 border-t border-border pt-10 sm:pt-12">
+	<div class="mb-6 flex flex-wrap items-center justify-between gap-2 font-mono text-xs text-muted-foreground">
+		<div class="flex items-center gap-2.5">
+			<span class="font-semibold text-accent">{timelineNumber}</span>
 			<span class="text-border" aria-hidden="true">/</span>
-			<span class="text-muted-foreground">{internship.domain}</span>
+			<span>{internship.domain}</span>
 		</div>
-		<span class="text-muted-foreground">
+		<span>
 			{internship.period} · {internship.location}
 		</span>
 	</div>
 
-	<div class="grid grid-cols-1 items-start gap-6 md:grid-cols-12 md:gap-8">
+	<div class="grid grid-cols-1 items-start gap-7 md:grid-cols-12 md:gap-10">
 		<div
 			class:list={[
 				'md:col-span-5',
@@ -39,7 +36,7 @@ const imgHeight = internship.aspectHint === 'wide' ? 540 : 540;
 		>
 			<div
 				class:list={[
-					'w-full overflow-hidden rounded-xl border border-border bg-surface-subtle',
+					'w-full overflow-hidden rounded-xl border border-border/80 bg-surface-subtle',
 					aspectClass,
 				]}
 			>
@@ -61,15 +58,14 @@ const imgHeight = internship.aspectHint === 'wide' ? 540 : 540;
 				<p class="mt-1 text-base font-medium text-accent">{internship.role}</p>
 			</div>
 
-			<ul class="flex flex-wrap gap-2" aria-label={`${internship.company} key highlights`}>
-				{internship.highlights.map((tag) => (
-					<li class="rounded-md border border-border bg-surface-subtle px-2.5 py-1 font-mono text-xs text-foreground/90">
-						{tag}
-					</li>
-				))}
-			</ul>
+			<p
+				class="font-mono text-xs leading-relaxed text-muted-foreground"
+				aria-label={`${internship.company} technical scope`}
+			>
+				{internship.highlights.join(' · ')}
+			</p>
 
-			<div class="space-y-3.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
+			<div class="space-y-3.5 text-sm leading-relaxed text-foreground/80 sm:text-base">
 				{internship.paragraphs.map((paragraph) => (
 					<p>{paragraph}</p>
 				))}

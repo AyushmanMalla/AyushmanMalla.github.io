@@ -290,4 +290,45 @@ test.describe('Responsive Layout, Resizing, Container & Aspect Ratio Guards', ()
 		const nextLabel = await toggleBtn.getAttribute('aria-label');
 		expect(nextLabel).not.toBe(initialLabel);
 	});
+
+	test('copy-email button on homepage updates feedback state on click', async ({ page }) => {
+		await page.setViewportSize({ width: 1280, height: 800 });
+		await page.goto('/', { waitUntil: 'networkidle' });
+		const copyBtn = page.locator('[data-copy-email]').first();
+		await expect(copyBtn).toBeVisible();
+		const status = copyBtn.locator('[data-copy-status]');
+		await expect(status).toHaveText('Copy');
+		await copyBtn.click();
+		await expect(status).toHaveText('Copied ✓');
+		await expect(copyBtn).toHaveAttribute('data-copied', 'true');
+	});
+
+	test('code-block copy button on blog post works without overflowing mobile 375px', async ({
+		page,
+	}) => {
+		await page.setViewportSize({ width: 375, height: 812 });
+		await page.goto('/blog/branch-prediction/', { waitUntil: 'networkidle' });
+
+		const copyBtn = page.locator('[data-code-copy]').first();
+		await expect(copyBtn).toBeVisible();
+		await expect(copyBtn).toHaveText('Copy');
+
+		const bounds = await page.evaluate(() => {
+			const btn = document.querySelector('[data-code-copy]');
+			const rect = btn?.getBoundingClientRect();
+			return {
+				btnRight: rect?.right ?? 0,
+				btnLeft: rect?.left ?? 0,
+				scrollWidth: document.documentElement.scrollWidth,
+				innerWidth: window.innerWidth,
+			};
+		});
+		expect(bounds.btnLeft).toBeGreaterThanOrEqual(0);
+		expect(bounds.btnRight).toBeLessThanOrEqual(bounds.innerWidth + 1);
+		expect(bounds.scrollWidth).toBeLessThanOrEqual(bounds.innerWidth + 1);
+
+		await copyBtn.click();
+		await expect(copyBtn).toHaveText('Copied ✓');
+		await expect(copyBtn).toHaveAttribute('data-copied', 'true');
+	});
 });

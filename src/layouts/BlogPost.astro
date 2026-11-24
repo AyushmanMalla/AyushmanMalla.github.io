@@ -33,20 +33,19 @@ const {
 	<div class="reading-progress" aria-hidden="true"></div>
 
 	<article class="py-10 sm:py-14">
-		<div class="mb-6">
+		<div class="mb-8">
 			<a
 				href="/blog/"
-				class="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+				class="inline-flex min-h-[40px] items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 			>
 				<span aria-hidden="true">←</span>
 				<span>Back to writing</span>
 			</a>
 		</div>
 
-		<header class="mb-8 space-y-4">
-			<div class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
-				<span class="inline-flex items-center gap-1.5 text-accent">
-					<span aria-hidden="true" class="inline-block h-1.5 w-1.5 rounded-[1px] bg-accent" />
+		<header class="mb-9 space-y-4">
+			<div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted-foreground">
+				<span class="text-accent">
 					<FormattedDate date={pubDate} />
 				</span>
 				{updatedDate && (
@@ -64,13 +63,9 @@ const {
 			</p>
 
 			{tags.length > 0 && (
-				<ul class="flex flex-wrap gap-2 pt-1" aria-label="Post topics">
-					{tags.map((tag) => (
-						<li class="rounded-md border border-border bg-surface px-2.5 py-0.5 font-mono text-xs text-foreground/85">
-							{tag}
-						</li>
-					))}
-				</ul>
+				<p class="pt-1 font-mono text-xs text-muted-foreground/85" aria-label="Post topics">
+					{tags.join(' · ')}
+				</p>
 			)}
 		</header>
 
@@ -81,16 +76,13 @@ const {
 					video={heroVideo}
 					alt={heroAlt ?? title}
 					aspectClass="aspect-[2/1]"
-					class="rounded-2xl border border-border"
+					class="rounded-xl border border-border/80"
 					priority={true}
 				/>
 			</div>
 		)}
 
-		<div class="mb-10 flex items-center gap-3" aria-hidden="true">
-			<span class="h-[2px] w-12 bg-accent" />
-			<span class="h-px flex-1 bg-border" />
-		</div>
+		<div class="mb-10 h-px w-full bg-border" aria-hidden="true" />
 
 		<div class="prose prose-invert prose-obsidian prose-lg max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight">
 			<slot />
@@ -99,17 +91,94 @@ const {
 		<footer class="mt-14 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
 			<a
 				href="/blog/"
-				class="inline-flex items-center gap-2 font-mono text-xs text-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+				class="inline-flex min-h-[40px] items-center gap-2 font-mono text-xs text-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 			>
 				<span aria-hidden="true">←</span>
 				<span>All technical notes</span>
 			</a>
 			<a
 				href={SOCIAL_LINKS.email}
-				class="font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+				class="inline-flex min-h-[40px] items-center font-mono text-xs text-muted-foreground transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
 			>
 				Questions or thoughts? Email me →
 			</a>
 		</footer>
 	</article>
 </BaseLayout>
+
+<script>
+	async function copyCodeText(text: string) {
+		try {
+			if (navigator.clipboard && window.isSecureContext) {
+				await navigator.clipboard.writeText(text);
+				return true;
+			}
+		} catch {
+			// Clipboard API unavailable or blocked in this context
+		}
+		return false;
+	}
+
+	function initCodeCopyButtons() {
+		document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+			if (pre.dataset.copyEnhanced === 'true') return;
+			pre.dataset.copyEnhanced = 'true';
+
+			const wrap = document.createElement('div');
+			wrap.className = 'code-block-wrap';
+			pre.parentNode?.insertBefore(wrap, pre);
+			wrap.appendChild(pre);
+
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.className = 'code-copy-btn';
+			button.dataset.codeCopy = 'true';
+			button.setAttribute('aria-label', 'Copy code');
+			button.textContent = 'Copy';
+
+			let timer: number | undefined;
+			button.addEventListener('click', async () => {
+				const code = pre.querySelector('code')?.textContent ?? pre.textContent ?? '';
+				await copyCodeText(code);
+				button.textContent = 'Copied ✓';
+				button.dataset.copied = 'true';
+				button.setAttribute('aria-label', 'Copied code');
+				window.clearTimeout(timer);
+				timer = window.setTimeout(() => {
+					button.textContent = 'Copy';
+					delete button.dataset.copied;
+					button.setAttribute('aria-label', 'Copy code');
+				}, 2000);
+			});
+
+			wrap.appendChild(button);
+		});
+	}
+
+	function initReadingProgressFallback() {
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (CSS.supports('animation-timeline', 'scroll()')) return;
+
+		const bar = document.querySelector<HTMLElement>('.reading-progress');
+		if (!bar || bar.dataset.fallbackBound === 'true') return;
+		bar.dataset.fallbackBound = 'true';
+
+		const update = () => {
+			const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+			const progress = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+			bar.style.transform = `scaleX(${progress})`;
+		};
+
+		update();
+		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('resize', update, { passive: true });
+	}
+
+	function initBlogPost() {
+		initCodeCopyButtons();
+		initReadingProgressFallback();
+	}
+
+	initBlogPost();
+	document.addEventListener('astro:after-swap', initBlogPost);
+</script>
