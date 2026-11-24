@@ -10,6 +10,9 @@ interface Props {
 	description?: string;
 	image?: ImageMetadata;
 	includeVerification?: boolean;
+	ogType?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
 	mainClass?: string;
 }
 
@@ -18,6 +21,9 @@ const {
 	description = SITE_DESCRIPTION,
 	image,
 	includeVerification = false,
+	ogType = 'website',
+	publishedTime,
+	modifiedTime,
 	mainClass = 'mx-auto w-full max-w-5xl px-4 sm:px-6',
 } = Astro.props;
 ---
@@ -30,6 +36,9 @@ const {
 			description={description}
 			image={image}
 			includeVerification={includeVerification}
+			ogType={ogType}
+			publishedTime={publishedTime}
+			modifiedTime={modifiedTime}
 		>
 			<slot name="head" />
 		</BaseHead>

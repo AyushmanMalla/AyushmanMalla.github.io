@@ -332,3 +332,76 @@ test.describe('Responsive Layout, Resizing, Container & Aspect Ratio Guards', ()
 		await expect(copyBtn).toHaveAttribute('data-copied', 'true');
 	});
 });
+
+test.describe('SEO, Google Search Console & Indexing Integrity', () => {
+	test('homepage preserves Google Search Console verification tag and Person JSON-LD', async ({
+		page,
+	}) => {
+		await page.goto('/', { waitUntil: 'networkidle' });
+
+		const gsc = await page
+			.locator('meta[name="google-site-verification"]')
+			.getAttribute('content');
+		expect(gsc).toBe('kdgSpY7QTIkW8ZWul4Ma-UEsBqYUBlJ-qvlFd5e80x4');
+
+		const robotsMeta = await page.locator('meta[name="robots"]').getAttribute('content');
+		expect(robotsMeta).toBe('index, follow');
+
+		const jsonLdRaw = await page.locator('script[type="application/ld+json"]').first().textContent();
+		expect(jsonLdRaw).toBeTruthy();
+		const parsed = JSON.parse(jsonLdRaw!);
+		expect(parsed['@type']).toBe('Person');
+		expect(parsed.url).toBe('https://ayushmanmalla.github.io');
+	});
+
+	test('all routes expose valid canonical URLs, Open Graph tags, and BlogPosting JSON-LD on posts', async ({
+		page,
+	}) => {
+		for (const route of ROUTES) {
+			await page.goto(route, { waitUntil: 'networkidle' });
+			const canonical = await page.locator('link[rel="canonical"]').getAttribute('href');
+			expect(canonical, `Canonical on ${route}`).toBe(`https://ayushmanmalla.github.io${route}`);
+
+			const ogType = await page.locator('meta[property="og:type"]').getAttribute('content');
+			const isPost = route.startsWith('/blog/') && route !== '/blog/';
+			expect(ogType, `og:type on ${route}`).toBe(isPost ? 'article' : 'website');
+
+			const ogImage = await page.locator('meta[property="og:image"]').getAttribute('content');
+			expect(ogImage, `Absolute og:image on ${route}`).toMatch(/^https:\/\/ayushmanmalla\.github\.io\//);
+
+			if (isPost) {
+				const jsonLdRaw = await page
+					.locator('script[type="application/ld+json"]')
+					.first()
+					.textContent();
+				const parsed = JSON.parse(jsonLdRaw!);
+				expect(parsed['@type']).toBe('BlogPosting');
+				expect(parsed.headline).toBeTruthy();
+				expect(parsed.datePublished).toBeTruthy();
+			}
+		}
+	});
+
+	test('robots.txt, sitemap-index.xml, and sitemap-0.xml preserve every indexed URL', async ({
+		request,
+	}) => {
+		const robotsRes = await request.get('/robots.txt');
+		expect(robotsRes.status()).toBe(200);
+		const robotsTxt = await robotsRes.text();
+		expect(robotsTxt).toContain('Allow: /');
+		expect(robotsTxt).toContain('Sitemap: https://ayushmanmalla.github.io/sitemap-index.xml');
+
+		const indexRes = await request.get('/sitemap-index.xml');
+		expect(indexRes.status()).toBe(200);
+		expect(await indexRes.text()).toContain('https://ayushmanmalla.github.io/sitemap-0.xml');
+
+		const mapRes = await request.get('/sitemap-0.xml');
+		expect(mapRes.status()).toBe(200);
+		const mapXml = await mapRes.text();
+		for (const route of ROUTES) {
+			expect(mapXml, `Sitemap includes ${route}`).toContain(
+				`<loc>https://ayushmanmalla.github.io${route}</loc>`,
+			);
+		}
+	});
+});

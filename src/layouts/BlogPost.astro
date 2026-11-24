@@ -3,7 +3,7 @@ import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import HeroMedia from '../components/HeroMedia.astro';
-import { SOCIAL_LINKS } from '../consts';
+import { SITE_TITLE, SITE_URL, SOCIAL_LINKS } from '../consts';
 import BaseLayout from './BaseLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
@@ -22,14 +22,42 @@ const {
 	tags = [],
 	readingTime,
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? SITE_URL).toString();
+const articleImageURL = heroImage
+	? new URL(heroImage.src, Astro.site ?? SITE_URL).toString()
+	: undefined;
+const blogPostingJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+	...(articleImageURL ? { image: articleImageURL } : {}),
+	...(tags.length > 0 ? { keywords: tags.join(', ') } : {}),
+	author: {
+		'@type': 'Person',
+		name: SITE_TITLE,
+		url: SITE_URL,
+	},
+	mainEntityOfPage: {
+		'@type': 'WebPage',
+		'@id': canonicalURL,
+	},
+};
 ---
 
 <BaseLayout
 	title={title}
 	description={description}
 	image={heroImage}
+	ogType="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
 	mainClass="mx-auto w-full max-w-3xl px-4 sm:px-6"
 >
+	<script slot="head" type="application/ld+json" set:html={JSON.stringify(blogPostingJsonLd)} />
 	<div class="reading-progress" aria-hidden="true"></div>
 
 	<article class="py-10 sm:py-14">
